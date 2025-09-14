@@ -13,12 +13,16 @@ class familiaresEnvioCodigoMail extends Mailable
 {
     use Queueable, SerializesModels;
 
+    private $correo;
+    private $codigo; 
+
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    public function __construct($correo,$codigo)
     {
-        //
+        $this->correo = $correo;
+        $this->codigo = $codigo;
     }
 
     /**
@@ -37,7 +41,11 @@ class familiaresEnvioCodigoMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'view.name',
+            view: 'Mails.familiaresEnvioCodigo',
+            with: [
+                'correo' => $this->correo,
+                'codigo' => $this->codigo,
+            ]
         );
     }
 
