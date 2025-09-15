@@ -11,6 +11,7 @@ use App\Mail\familiaresEnvioCodigoMail as fmEnvioC;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use PhpParser\Node\Stmt\TryCatch;
 
 class familiaresController extends Controller
 {
@@ -178,6 +179,40 @@ $correo=$request->CorreoE;
         return response()->json(['message' => $e->getMessage()], 500);
     }
         
+    }
+
+    //metodo para verificar el codigo de recuperacion
+    public function verificarCodigoRecuperacion(Request $request)
+    {
+
+        try{
+        $request->validate([
+            'CorreoE' => 'required|email',
+            'CodigoVerificacion' => 'required',
+        ]);
+        }catch(\Illuminate\Validation\ValidationException $e){
+            $firstError = collect($e->errors())->flatten()->first();
+            return response()->json(['errors' => $firstError], 422);
+        }
+
+        $correo=$request->CorreoE;
+        $codigo=$request->CodigoVerificacion;
+
+        $Usuario=fam::where('CorreoE', $correo)->first();
+        if (!$Usuario)
+        {
+            return response()->json(['message' => 'Usuario No encontrado'], 404);
+        }
+
+        if ($Usuario->CodigoVerificacion != $codigo)
+        {
+            return response()->json(['message' => 'Codigo de verificacion incorrecto'], 401);
+        }
+        else
+        {
+            return response()->json(['message' => 'Codigo de verificacion correcto'], 200);
+        }
+            
     }
 
 

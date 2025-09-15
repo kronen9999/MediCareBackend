@@ -14,7 +14,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->validateCsrfTokens([
             'Familiares/Registro',
            'Familiares/Login',
-           'Familiares/RecupearCuentaPCorreo'
+           'Familiares/RecupearCuentaPCorreo',
+           'Familiares/VerificarCodigoRecuperacion'
 
         ]);
         //
