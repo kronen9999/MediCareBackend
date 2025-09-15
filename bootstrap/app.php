@@ -11,6 +11,14 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        $middleware->validateCsrfTokens([
+            'Familiares/Registro',
+           'Familiares/Login',
+           'Familiares/RecupearCuentaPCorreo',
+           'Familiares/VerificarCodigoRecuperacion',
+           'Familiares/RestablecerContrasena'
+
+        ]);
         //
     })
     ->withExceptions(function (Exceptions $exceptions) {
