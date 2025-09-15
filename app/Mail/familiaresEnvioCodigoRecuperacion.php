@@ -13,12 +13,16 @@ class FamiliaresEnvioCodigoRecuperacion extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public $correoE;
+    public $codigoRecuperacion;
+
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    public function __construct($correoE,$codigoRecuperacion)
     {
-        //
+        $this->correoE = $correoE;
+        $this->codigoRecuperacion = $codigoRecuperacion;
     }
 
     /**
@@ -27,7 +31,7 @@ class FamiliaresEnvioCodigoRecuperacion extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Familiares Envio Codigo Recuperacion',
+            subject: 'Envio de codigo de recuperacion',
         );
     }
 
@@ -37,7 +41,11 @@ class FamiliaresEnvioCodigoRecuperacion extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'view.name',
+            view: 'Mails.familiaresEnvioCodigoRecuperacion',
+            with: [
+                'correoE' => $this->correoE,
+                'codigoRecuperacion' => $this->codigoRecuperacion
+            ]
         );
     }
 
