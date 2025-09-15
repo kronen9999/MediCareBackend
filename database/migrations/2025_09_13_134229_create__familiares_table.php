@@ -16,10 +16,10 @@ return new class extends Migration
             $table->string('Nombre', 100)->nullable();
             $table->string('ApellidoP', 100)->nullable();
             $table->string('ApellidoM', 100)->nullable();
-            $table->string('CorreoE',250)->nullable(false);
-            $table->string('Usuario',50)->nullable();
+            $table->string('CorreoE',250)->unique()->nullable(false);
+            $table->string('Usuario',50)->unique()->nullable();
             $table->string('Contrasena',250)->nullable(false);
-            $table->string('TokenAcceso',50)->nullable(false);
+            $table->string('TokenAcceso',50)->unique()->nullable(false);
             $table->tinyInteger('UsuarioVerificado')->default(0);
             $table->string('CodigoVerificacion',10)->nullable();
         });
