@@ -12,8 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('informacioncontactofamiliar', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+            $table->bigInteger("IdFamiliar")->primary()->unique()->nullable(false);
+            $table->foreign('IdFamiliar')->references('IdFamiliar')->on('familiares')->onDelete('cascade')->onUpdate('cascade');
+            $table->string('Direccion', 250)->nullable();
+            $table->string('Telefono1', 10)->nullable();
+            $table->string('Telefono2', 10)->nullable();
         });
     }
 
