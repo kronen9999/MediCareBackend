@@ -8,4 +8,5 @@ Route::get('Familiares/Verificacion/{CorreoE}/{CodigoVerificacion}',[familiaresC
 Route::post('Familiares/Login',[familiaresController::class,'login']);
 Route::post('Familiares/RecupearCuentaPCorreo',[familiaresController::class,'recuperarCuentaPCorreo']);
 Route::post('Familiares/VerificarCodigoRecuperacion',[familiaresController::class,'verificarCodigoRecuperacion']);
+Route::post('Familiares/RestablecerContrasena',[familiaresController::class,'restablecerContrasena']);
 Route::get('Familiares/getInfo',[familiaresController::class,'getInfo']);

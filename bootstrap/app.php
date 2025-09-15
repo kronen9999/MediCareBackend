@@ -15,7 +15,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'Familiares/Registro',
            'Familiares/Login',
            'Familiares/RecupearCuentaPCorreo',
-           'Familiares/VerificarCodigoRecuperacion'
+           'Familiares/VerificarCodigoRecuperacion',
+           'Familiares/RestablecerContrasena'
 
         ]);
         //

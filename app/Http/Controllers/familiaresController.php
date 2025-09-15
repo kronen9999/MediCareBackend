@@ -155,7 +155,7 @@ class familiaresController extends Controller
         ]);
     } catch (\Illuminate\Validation\ValidationException $e) {
         $firstError = collect($e->errors())->flatten()->first();
-        return response()->json(['errors' => $firstError], 422);
+        return response()->json(['error' => $firstError], 422);
     } 
 
     try{
@@ -192,7 +192,7 @@ $correo=$request->CorreoE;
         ]);
         }catch(\Illuminate\Validation\ValidationException $e){
             $firstError = collect($e->errors())->flatten()->first();
-            return response()->json(['errors' => $firstError], 422);
+            return response()->json(['error' => $firstError], 422);
         }
 
         $correo=$request->CorreoE;
@@ -213,6 +213,41 @@ $correo=$request->CorreoE;
             return response()->json(['message' => 'Codigo de verificacion correcto'], 200);
         }
             
+    }
+
+    //metodo para restablecer la contrasena
+    public function restablecerContrasena(Request $request)
+    {
+        try{
+
+            $request->validate([
+                'CorreoE' => 'required|email',
+                'CodigoVerificacion' => 'required',
+                'NuevaContrasena' => 'required|min:8|max:20',
+            ]);
+
+        }catch(\Illuminate\Validation\ValidationException $e){
+           $firstError = collect($e->errors())->flatten()->first();
+              return response()->json(['error' => $firstError], 422);
+        }
+
+
+        $correo=$request->CorreoE;
+        $codigo=$request->CodigoVerificacion;
+        $nuevaContrasena=$request->NuevaContrasena;
+
+        $Usuario=fam::where('CorreoE', $correo)->first();
+        if (!$Usuario)
+        {
+            return response()->json(['message' => 'Usuario No encontrado'], 404);
+        }
+        if ($Usuario->CodigoVerificacion != $codigo)
+        {
+            return response()->json(['message' => 'Codigo de verificacion incorrecto'], 401);
+        }
+        $Usuario->Contrasena = $nuevaContrasena;
+        $Usuario->save();
+        return response()->json(['message' => 'Contrasena restablecida'], 200);
     }
 
 
