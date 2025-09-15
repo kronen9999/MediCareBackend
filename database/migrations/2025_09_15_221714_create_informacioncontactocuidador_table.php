@@ -12,8 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('informacioncontactocuidador', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+            $table->bigInteger("IdCuidador")->primary()->unique()->nullable(false);
+            $table->foreign('IdCuidador')->references('IdCuidador')->on('cuidadores')->onDelete('cascade')->onUpdate('cascade');
+            $table->string('Direccion', 250)->nullable();
+            $table->string('Telefono1', 10)->nullable();
+            $table->string('Telefono2', 10)->nullable();
         });
     }
 
