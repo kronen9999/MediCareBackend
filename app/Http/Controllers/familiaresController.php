@@ -56,7 +56,7 @@ class familiaresController extends Controller
             $familiar->TokenAcceso = $tokenAcceso;
             $familiar->save();
 
-            Mail::to($request->CorreoE)->send(new fmEnvioC($request->CorreoE, $codigoVerificacion));
+           familiaresEnvioCodigoRecuperacion::dispatch($request->CorreoE,$codigoVerificacion);
             DB::commit();
 
             return response()->json(['message' => 'Familiar registrado'], 201);  
