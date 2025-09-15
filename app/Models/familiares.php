@@ -42,6 +42,12 @@ class familiares extends Model
             set: fn($value) => bcrypt($value),);
     }
 
+    // Definir la relación con el modelo cuidadores
+    public function cuidadores()
+    {
+        return $this->hasMany(cuidadores::class, 'IdFamiliar', 'IdFamiliar');
+    }
+
     
 
 }
