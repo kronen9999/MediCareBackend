@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 
-class familiares extends Model
+class cuidadores extends Model
 {
-    protected $table = 'familiares';
-    protected $primaryKey = 'IdFamiliar';
+    protected $table = 'cuidadores';
+    protected $primaryKey = 'IdCuidador';
     public $timestamps = false;
 
     public function Nombre():Attribute{
@@ -42,12 +42,10 @@ class familiares extends Model
             set: fn($value) => bcrypt($value),);
     }
 
-    // Definir la relación con el modelo cuidadores
-    public function cuidadores()
+
+    // Definir la relación con el modelo familiares
+    public function familiar()
     {
-        return $this->hasMany(cuidadores::class, 'IdFamiliar', 'IdFamiliar');
+        return $this->belongsTo(familiares::class, 'IdFamiliar', 'IdFamiliar');
     }
-
-    
-
 }
