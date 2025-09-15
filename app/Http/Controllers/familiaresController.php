@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Mail\familiaresEnvioCodigoMail as fmEnvioC;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 
 class familiaresController extends Controller
@@ -101,6 +102,49 @@ class familiaresController extends Controller
 
         return response()->json(['message' => 'Usuario verificado'], 200);
     
+    }
+
+    public function login(Request $request)
+    {
+      
+      $credencial=$request->Credencial;
+      $Contrasena=$request->Contrasena;
+         
+      if (!$credencial && !$Contrasena)
+        {
+            return response()->json(['message' => 'Faltan parametros'], 400);
+        }
+
+        if (!$credencial || !$Contrasena)
+        {
+            return response()->json(['message' => 'Faltan parametros'], 400);
+        }
+
+        $Usuario=fam::where(function($query) use ($credencial){
+            $query->where('CorreoE',$credencial)
+                  ->orWhere('Usuario',$credencial);
+        })->first();
+        if (!$Usuario)
+        {
+            return response()->json(['message' => 'Usuario No encontrado'], 404);
+        }
+        if (!Hash::check($Contrasena, $Usuario->Contrasena))
+        {
+            return response()->json(['message' => 'Contraseña incorrecta'], 401);
+        }
+        if ($Usuario->UsuarioVerificado !="1")
+        {
+            return response()->json(['message' => 'Usuario no verificado'], 403);
+        }
+        return response()->json(['message' => 'Login exitoso',
+    'Usuario'=>[
+        "IdUsuario"=>$Usuario->IdFamiliar,
+        "TokenAcceso"=>$Usuario->TokenAcceso,
+    ]], 200);
+
+
+
+
     }
     
 
