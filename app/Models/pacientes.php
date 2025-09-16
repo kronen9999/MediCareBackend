@@ -43,4 +43,9 @@ class pacientes extends Model
         return $this->belongsTo(cuidadores::class, 'IdCuidador', 'IdCuidador');
     }
 
+    public function medicamentos()
+    {
+        return $this->hasMany(medicamentos::class, 'IdPaciente', 'IdPaciente');
+    }
+
 }
