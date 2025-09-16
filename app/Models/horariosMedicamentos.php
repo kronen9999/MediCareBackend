@@ -23,4 +23,10 @@ class horariosMedicamentos extends Model
     public function medicamento(){
         return $this->belongsTo(medicamentos::class, 'IdMedicamento', 'IdMedicamento');
     }
+
+    public function historialAdministracion()
+    {
+        return $this->hasMany(historialAdministracion::class, 'IdHorario', 'IdHorario');
+    }
+
 }
