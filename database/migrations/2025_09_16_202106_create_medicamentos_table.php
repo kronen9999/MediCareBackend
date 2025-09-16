@@ -15,7 +15,7 @@ return new class extends Migration
             $table->bigInteger("IdMedicamento")->autoIncrement()->primary();
             $table->string("NombreM", 100)->nullable(false);
             $table->string("DescripcionM", 255)->nullable();
-            $table->string("Tipo Medicamento", 100)->nullable();
+            $table->string("TipoMedicamento", 100)->nullable();
             $table->bigInteger("IdPaciente")->nullable(false);
             $table->foreign("IdPaciente")->references("IdPaciente")->on("pacientes")->onDelete("cascade");
             $table->tinyInteger("MedicamentoActivo")->default(0);
