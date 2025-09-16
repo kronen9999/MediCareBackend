@@ -53,4 +53,9 @@ class cuidadores extends Model
     {
         return $this->hasOne(informacionContactoCuidador::class, 'IdCuidador', 'IdCuidador');
     }
+
+    public function pacientes()
+    {
+        return $this->hasMany(pacientes::class, 'IdCuidador', 'IdCuidador');
+    }
 }
