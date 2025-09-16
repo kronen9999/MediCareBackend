@@ -11,9 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('historial_administracion', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::create('historialadministracion', function (Blueprint $table) {
+            $table->bigInteger('idHistorial')->autoIncrement()->primary();
+            $table->dateTime("FechaProgramada");
+            $table->dateTime("HoraAdministracion")->nullable();
+            $table->enum("Estado", ['Administrado','No Administrado'])->default('No Administrado');
+            $table->bigInteger("IdFamiliar");
+            $table->foreign('IdFamiliar')->references('idFamiliar')->on('familiares')->onDelete('cascade');
+            $table->bigInteger("IdMedicamento");
+            $table->foreign('IdMedicamento')->references('IdMedicamento')->on('medicamentos')->onDelete('cascade');
+            $table->bigInteger("IdPaciente");
+            $table->foreign('IdPaciente')->references('IdPaciente')->on('pacientes')->onDelete('cascade');
+            $table->bigInteger("IdCuidador");
+            $table->foreign('IdCuidador')->references('IdCuidador')->on('cuidadores')->onDelete('cascade');
+            $table->bigInteger("IdHorario");
+            $table->foreign('IdHorario')->references('IdHorario')->on('horariosmedicamentos')->onDelete('cascade');
         });
     }
 
@@ -22,6 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('historial_administracion');
+        Schema::dropIfExists('historialadministracion');
     }
 };
