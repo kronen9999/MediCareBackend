@@ -12,8 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('pacientes', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+            $table->bigInteger('IdPacientes')->autoIncrement()->primary();
+            $table->string('Nombre', 100)->nullable(false);
+            $table->string('ApellidoP', 100)->nullable(false);
+            $table->string('ApellidoM', 100)->nullable();
+            $table->bigInteger('IdFamiliar');
+            $table->foreign('IdFamiliar')->references('IdFamiliar')->on('familiares')->onDelete('cascade');
+            $table->bigInteger('IdCuidador')->nullable();
+            $table->foreign('IdCuidador')->references('IdCuidador')->on('cuidadores')->onDelete('cascade');
         });
     }
 
