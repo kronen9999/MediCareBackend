@@ -53,6 +53,11 @@ class familiares extends Model
         return $this->hasOne(informacionContactoFamiliar::class, 'IdFamiliar', 'IdFamiliar');
     }
 
+    public function pacientes()
+    {
+        return $this->hasMany(pacientes::class, 'IdFamiliar', 'IdFamiliar');
+    }
+
     
 
 }
