@@ -48,4 +48,9 @@ class cuidadores extends Model
     {
         return $this->belongsTo(familiares::class, 'IdFamiliar', 'IdFamiliar');
     }
+
+    public function informacionContactoCuidador()
+    {
+        return $this->hasOne(informacionContactoCuidador::class, 'IdCuidador', 'IdCuidador');
+    }
 }
