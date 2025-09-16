@@ -12,8 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('horariosmedicamentos', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+            $table->bigInteger("IdHorario")->primary()->autoIncrement();
+            $table->dateTime("HoraPrimeraDosis")->nullable(false);
+            $table->integer("IntervaloHoras")->nullable(false);
+            $table->integer("Dosis")->nullable(false);
+            $table->string("UnidaDosis")->nullable(false);
+            $table->text("Notas")->nullable();
+            $table->bigInteger("IdMedicamento");
+            $table->foreign("IdMedicamento")->references("IdMedicamento")->on("medicamentos")->onDelete("cascade");
+
         });
     }
 
