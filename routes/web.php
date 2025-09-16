@@ -11,3 +11,4 @@ require __DIR__.'/informacionContactoFamiliar.php';
 require __DIR__.'/informacionContactoCuidador.php';
 require __DIR__.'/pacientes.php';
 require __DIR__.'/informacioncontactopacientes.php';
+require __DIR__.'/medicamentos.php';
