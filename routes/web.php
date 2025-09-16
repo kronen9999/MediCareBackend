@@ -13,3 +13,4 @@ require __DIR__.'/pacientes.php';
 require __DIR__.'/informacioncontactopacientes.php';
 require __DIR__.'/medicamentos.php';
 require __DIR__.'/horariosMedicamentos.php';
+require __DIR__.'/historialAdministracion.php';
