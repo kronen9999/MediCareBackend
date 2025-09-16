@@ -35,4 +35,8 @@ class medicamentos extends Model
      public function paciente(){
         return $this->belongsTo(pacientes::class, 'IdPaciente', 'IdPaciente');
      }
+
+     public function horariosMedicamentos(){
+        return $this->hasMany(horariosMedicamentos::class, 'IdMedicamento', 'IdMedicamento');
+     }
 }
