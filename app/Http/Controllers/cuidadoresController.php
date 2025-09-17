@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\cuidadoresEnviCodigoRecuperacion;
 use Illuminate\Http\Request;
 
 use App\Models\cuidadores as cu;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
@@ -49,6 +51,39 @@ class cuidadoresController extends Controller
 
     }
    
+     public function recuperarCuentaPCorreo(Request $request)
+    {
+        try {
+        $request->validate([
+            'CorreoE' => 'required|email',
+        ]);
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        $firstError = collect($e->errors())->flatten()->first();
+        return response()->json(['error' => $firstError], 422);
+    } 
+
+    try{
+        DB::beginTransaction();
+$correo=$request->CorreoE;
+
+        $Usuario=cu::where('CorreoE',$correo)->first();
+        if (!$Usuario)
+        {
+            return response()->json(['message' => 'Usuario No encontrado'], 404);
+        }
+
+        $codigoVerificacion = Str::random(10);
+        $Usuario->CodigoVerificacion = $codigoVerificacion;
+        $Usuario->save();
+        cuidadoresEnviCodigoRecuperacion::dispatch($correo, $codigoVerificacion);
+        DB::commit();
+        return response()->json(['message' => 'Correo de recuperacion enviado'], 200);
+    }catch(\Exception $e){
+        DB::rollBack();
+        return response()->json(['message' => $e->getMessage()], 500);
+    }
+        
+    }
 
     
 }
