@@ -20,7 +20,8 @@ return Application::configure(basePath: dirname(__DIR__))
            'Familiares/AgregarCuidador',
            'Cuidadores/login',
            'Cuidadores/RecupearCuentaPCorreo',
-           'Cuidadores/VerificarCodigoRecuperacion'
+           'Cuidadores/VerificarCodigoRecuperacion',
+           'Cuidadores/RestablecerContrasena',
         ]);
         //
     })
