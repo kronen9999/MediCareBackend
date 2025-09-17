@@ -12,6 +12,8 @@ use Illuminate\Support\Str;
 
 class cuidadoresController extends Controller
 {
+
+    //metodo para el login del cuidador
  public function login(Request $request)
     {
       
@@ -50,6 +52,8 @@ class cuidadoresController extends Controller
     ]], 200);
 
     }
+
+    //metodo para enviar el codigo de verificacion por correo al cuidador
    
      public function recuperarCuentaPCorreo(Request $request)
     {
@@ -83,6 +87,40 @@ $correo=$request->CorreoE;
         return response()->json(['message' => $e->getMessage()], 500);
     }
         
+    }
+
+    //metodo para verificar que el codigo de recuperacion sea el correcto
+    public function verificarCodigoRecuperacion(Request $request)
+    {
+
+        try{
+        $request->validate([
+            'CorreoE' => 'required|email',
+            'CodigoVerificacion' => 'required',
+        ]);
+        }catch(\Illuminate\Validation\ValidationException $e){
+            $firstError = collect($e->errors())->flatten()->first();
+            return response()->json(['error' => $firstError], 422);
+        }
+
+        $correo=$request->CorreoE;
+        $codigo=$request->CodigoVerificacion;
+
+        $Usuario=cu::where('CorreoE', $correo)->first();
+        if (!$Usuario)
+        {
+            return response()->json(['message' => 'Usuario No encontrado'], 404);
+        }
+
+        if ($Usuario->CodigoVerificacion != $codigo)
+        {
+            return response()->json(['message' => 'Codigo de verificacion incorrecto'], 401);
+        }
+        else
+        {
+            return response()->json(['message' => 'Codigo de verificacion correcto'], 200);
+        }
+            
     }
 
     
