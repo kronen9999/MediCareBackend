@@ -47,10 +47,7 @@ class pacientes extends Model
     {
         return $this->hasMany(medicamentos::class, 'IdPaciente', 'IdPaciente');
     }
-    public function historialAdministracion()
-    {
-        return $this->hasMany(historialAdministracion::class, 'IdPaciente', 'IdPaciente');
-    }
+
     
 
 }

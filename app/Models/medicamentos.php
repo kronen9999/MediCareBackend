@@ -39,8 +39,4 @@ class medicamentos extends Model
      public function horariosMedicamentos(){
         return $this->hasMany(horariosMedicamentos::class, 'IdMedicamento', 'IdMedicamento');
      }
-        public function historialAdministracion()
-        {
-            return $this->hasMany(historialAdministracion::class, 'IdMedicamento', 'IdMedicamento');
-        }
 }

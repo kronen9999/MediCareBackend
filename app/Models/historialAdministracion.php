@@ -11,20 +11,7 @@ class historialAdministracion extends Model
     public $timestamps = false;
    
 
-    public function Familiar()
-    {
-        return $this->belongsTo(familiares::class, 'IdFamiliar');
-    }
 
-    public function Medicamento()
-    {
-        return $this->belongsTo(medicamentos::class, 'IdMedicamento');
-    }
-
-    public function Paciente()
-    {
-        return $this->belongsTo(pacientes::class, 'IdPaciente');
-    }
 
     public function Cuidador()
     {
