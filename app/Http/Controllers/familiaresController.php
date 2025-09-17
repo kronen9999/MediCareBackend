@@ -258,9 +258,6 @@ $correo=$request->CorreoE;
 
     public function agregarCuidador(Request $request)
     {
-
-        
-
         try{
 
             $request->validate([
@@ -309,12 +306,12 @@ $correo=$request->CorreoE;
             $cuidador->TokenAcceso=Str::random(50);
             $cuidador->save();
 
-            $infoContacto=new informacionContactoCuidador();
-            $infoContacto->IdCuidador=$cuidador->IdCuidador;
-            $infoContacto->Direccion=$request->Direccion;
-            $infoContacto->Telefono1=$request->Telefono1;
-            $infoContacto->Telefono2=$request->Telefono2;
-            $infoContacto->save();
+            $cuidador->informacionContactoCuidador()->create([
+                'IdCuidador' => $cuidador->IdCuidador,
+                'Direccion' => $request->Direccion,
+                'Telefono1' => $request->Telefono1,
+                'Telefono2' => $request->Telefono2,
+            ]);
             DB::commit();
             return response()->json(['Message'=>'Cuidador agregado'],201);
 
