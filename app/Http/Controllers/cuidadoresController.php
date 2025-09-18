@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\cuidadoresEnviCodigoRecuperacion;
+use App\Jobs\cuidadoresNotificarFamiliarRecuperacion;
 use Illuminate\Http\Request;
 
 use App\Models\cuidadores as cu;
@@ -157,6 +158,33 @@ $correo=$request->CorreoE;
         $Usuario->save();
         return response()->json(['message' => 'Contrasena restablecida'], 200);
     }
+    
+    public function alertaRecuperacionFamiliar(Request $request)
+    {
+        try{
+            $request->validate([
+                'Usuario' => 'required',
+            ]);
+        }catch(\Illuminate\Validation\ValidationException $e){
+            $firstError = collect($e->errors())->flatten()->first();
+              return response()->json(['error' => $firstError], 422);
+        }
 
+        $Usuario=cu::where('Usuario', $request->Usuario)->first();
+        if (!$Usuario)
+        {
+            return response()->json(['message' => 'Usuario No encontrado'], 404);
+        }
+
+        $UsernameRecuperar=$Usuario->Usuario;
+        $CorreoFamiliar=$Usuario->familiar->CorreoE;
+
+        cuidadoresNotificarFamiliarRecuperacion::dispatch($UsernameRecuperar, $CorreoFamiliar);
+
+        return response()->json(['message' => 'Notificacion enviada al familiar'], 200);
+        
+
+    }
+    
     
 }
