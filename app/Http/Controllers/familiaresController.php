@@ -96,7 +96,7 @@ class familiaresController extends Controller
             return response()->json(['message' => 'Usuario ya verificado'], 409);
         }
 
-        if ($Usuario->CodigoVerificacion !== $codigo)
+        if ($Usuario->CodigoVerificacion != $codigo)
         {
             return response()->json(['message' => 'Codigo de verificacion incorrecto'], 401);
         }
