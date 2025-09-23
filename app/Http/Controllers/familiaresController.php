@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\familiaresEnvioCodigoRecuperacion;
+use App\Jobs\familiaresEnvioCodigoVerificacion;
 use App\Models\cuidadores;
 use App\Models\familiares as fam;
 
@@ -59,7 +60,7 @@ class familiaresController extends Controller
             $familiar->TokenAcceso = $tokenAcceso;
             $familiar->save();
 
-           familiaresEnvioCodigoRecuperacion::dispatch($request->CorreoE,$codigoVerificacion);
+           familiaresEnvioCodigoVerificacion::dispatch($request->CorreoE,$codigoVerificacion);
             DB::commit();
 
             return response()->json(['message' => 'Familiar registrado'], 201);  
