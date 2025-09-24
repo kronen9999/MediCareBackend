@@ -31,7 +31,7 @@ class FamiliaresEnvioCodigoRecuperacion extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Envio de codigo de recuperacion',
+            subject: 'Codigo de recuperacion',
         );
     }
 
