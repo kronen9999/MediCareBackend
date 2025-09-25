@@ -16,8 +16,13 @@ return Application::configure(basePath: dirname(__DIR__))
            'Familiares/Login',
            'Familiares/RecupearCuentaPCorreo',
            'Familiares/VerificarCodigoRecuperacion',
-           'Familiares/RestablecerContrasena'
-
+           'Familiares/RestablecerContrasena',
+           'Familiares/AgregarCuidador',
+           'Cuidadores/login',
+           'Cuidadores/RecupearCuentaPCorreo',
+           'Cuidadores/VerificarCodigoRecuperacion',
+           'Cuidadores/RestablecerContrasena',
+           'Cuidadores/AlertaFamiliar'
         ]);
         //
     })

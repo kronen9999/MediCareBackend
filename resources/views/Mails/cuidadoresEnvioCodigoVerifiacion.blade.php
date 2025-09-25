@@ -159,7 +159,7 @@
 														<tr>
 															<td class="pad" style="width:100%;">
 																<div class="alignment" align="center">
-                                                                    <div style="max-width: 500px;"><img src="https://085cb14e85.imgdist.com/pub/bfra/tdqbpcts/ofs/m81/9sq/medicarelogo.png" alt="Descripción" style="display: block; height: auto; border: 0; width: 100%;" width="500" alt title height="auto"></div>
+																	<div style="max-width: 500px;"><img src="https://085cb14e85.imgdist.com/pub/bfra/tdqbpcts/ofs/m81/9sq/medicarelogo.png" style="display: block; height: auto; border: 0; width: 100%;" width="500" alt title height="auto"></div>
 																</div>
 															</td>
 														</tr>
@@ -180,10 +180,12 @@
 										<tbody>
 											<tr>
 												<td class="column column-1" width="100%" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; padding-bottom: 5px; padding-top: 5px; vertical-align: top;">
-													<table class="heading_block block-1" width="100%" border="0" cellpadding="10" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+													<table class="paragraph_block block-1" width="100%" border="0" cellpadding="10" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;">
 														<tr>
 															<td class="pad">
-																<h4 style="margin: 0; color: #475aff; direction: ltr; font-family: Arial, Helvetica, sans-serif; font-size: 14px; font-weight: 700; letter-spacing: normal; line-height: 1.2; text-align: center; margin-top: 0; margin-bottom: 0; mso-line-height-alt: 17px;"><span class="tinyMce-placeholder" style="word-break: break-word;">Nuestro sistema ha recibido una petición de registro como familiar con este correo, por favor verifica tu cuenta presionando el botón de aqui abajo de lo contrario ignora este correo.</span></h4>
+																<div style="color:#475aff;direction:ltr;font-family:Arial, Helvetica, sans-serif;font-size:16px;font-weight:700;letter-spacing:0px;line-height:1.2;text-align:center;mso-line-height-alt:19px;">
+																	<p style="margin: 0;">Su código de recuperación es el siguiente:</p>
+																</div>
 															</td>
 														</tr>
 													</table>
@@ -203,16 +205,37 @@
 										<tbody>
 											<tr>
 												<td class="column column-1" width="100%" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; padding-bottom: 5px; padding-top: 5px; vertical-align: top;">
-													<table class="button_block block-1" width="100%" border="0" cellpadding="10" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+													<table class="paragraph_block block-1" width="100%" border="0" cellpadding="10" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;">
 														<tr>
 															<td class="pad">
-																<div class="alignment" align="center"><!--[if mso]>
-<v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word"   style="height:42px;width:194px;v-text-anchor:middle;" arcsize="10%" fillcolor="#1c1982">
-<v:stroke dashstyle="Solid" weight="0px" color="#1c1982"/>
-<w:anchorlock/>
-<v:textbox inset="0px,0px,0px,0px">
-<center dir="false" style="color:#ffffff;font-family:sans-serif;font-size:16px">
-<![endif]--><span class="button" style="background-color: #1c1982; mso-shading: transparent; border-bottom: 0px solid transparent; border-left: 0px solid transparent; border-radius: 4px; border-right: 0px solid transparent; border-top: 0px solid transparent; color: #ffffff; display: inline-block; font-family: Arial, Helvetica, sans-serif; font-size: 16px; font-weight: 400; mso-border-alt: none; padding-bottom: 5px; padding-top: 5px; padding-left: 20px; padding-right: 20px; text-align: center; width: auto; word-break: keep-all; letter-spacing: normal;"><a href="http://localhost/Integrador9/MediCareBackend/public/Familiares/Verificacion/{{$correo}}/{{$codigo}}" style="text-decoration: none;color:#ffffff"><span style="word-break: break-word; line-height: 32px;">Verifica tu correo aqui</span></a></span><!--[if mso]></center></v:textbox></v:roundrect><![endif]--></div>
+																<div style="color:#475aff;direction:ltr;font-family:Arial, Helvetica, sans-serif;font-size:25px;font-weight:700;letter-spacing:0px;line-height:1.2;text-align:center;mso-line-height-alt:30px;">
+																	<p style="margin: 0;">{{$codigo}}</p>
+																</div>
+															</td>
+														</tr>
+													</table>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<table class="row row-6" align="center" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+						<tbody>
+							<tr>
+								<td>
+									<table class="row-content stack" align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-radius: 0; color: #000000; width: 600px; margin: 0 auto;" width="600">
+										<tbody>
+											<tr>
+												<td class="column column-1" width="100%" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; padding-bottom: 5px; padding-top: 5px; vertical-align: top;">
+													<table class="paragraph_block block-1" width="100%" border="0" cellpadding="10" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;">
+														<tr>
+															<td class="pad">
+																<div style="color:#475aff;direction:ltr;font-family:Arial, Helvetica, sans-serif;font-size:16px;font-weight:700;letter-spacing:0px;line-height:1.2;text-align:center;mso-line-height-alt:19px;">
+																	<p style="margin: 0;">No comparta este código con nadie ya que será usado para el restablecimiento de su contraseña</p>
+																</div>
 															</td>
 														</tr>
 													</table>

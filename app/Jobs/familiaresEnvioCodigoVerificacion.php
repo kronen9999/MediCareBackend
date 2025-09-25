@@ -18,6 +18,9 @@ class familiaresEnvioCodigoVerificacion implements ShouldQueue
 
     public $correoE;
     public $codigoVerificacion;
+
+    public $tries = 5;
+    public $backoff = 30;
     /**
      * Create a new job instance.
      */

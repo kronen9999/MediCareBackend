@@ -9,6 +9,15 @@ class informacionContactoCuidador extends Model
 {
    protected $table="informacioncontactocuidador";
 
+   protected $fillable = [
+       'IdCuidador',
+       'Direccion',
+       'Telefono1',
+       'Telefono2'
+   ];
+
+   public $timestamps=false;
+
    public function cuidador()
    {
        return $this->belongsTo(cuidadores::class, 'IdCuidador', 'IdCuidador');

@@ -9,20 +9,20 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class FamiliaresEnvioCodigoRecuperacion extends Mailable
+class cuidadoresEnvioCodigoVerifiacion extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $correoE;
-    public $codigoRecuperacion;
+    public $correo;
+    public $codigo;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($correoE,$codigoRecuperacion)
+    public function __construct($correo, $codigo)
     {
-        $this->correoE = $correoE;
-        $this->codigoRecuperacion = $codigoRecuperacion;
+        $this->correo = $correo;
+        $this->codigo = $codigo;
     }
 
     /**
@@ -31,7 +31,7 @@ class FamiliaresEnvioCodigoRecuperacion extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Codigo de recuperacion',
+            subject: 'Envio de codigo de recuperacion',
         );
     }
 
@@ -41,11 +41,11 @@ class FamiliaresEnvioCodigoRecuperacion extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'Mails.familiaresEnvioCodigoRecuperacion',
+            view: 'Mails.cuidadoresEnvioCodigoVerifiacion',
             with: [
-                'correoE' => $this->correoE,
-                'codigoRecuperacion' => $this->codigoRecuperacion
-            ]
+                'correo' => $this->correo,
+                'codigo' => $this->codigo,
+            ],
         );
     }
 

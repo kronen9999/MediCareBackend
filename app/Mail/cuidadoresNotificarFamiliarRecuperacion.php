@@ -9,21 +9,25 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class FamiliaresEnvioCodigoRecuperacion extends Mailable
+class cuidadoresNotificarFamiliarRecuperacion extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $correoE;
-    public $codigoRecuperacion;
+    public $correo;
+    public $usuario;
+
+    public $fechaHoraActual;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($correoE,$codigoRecuperacion)
+    public function __construct($correo, $usuario, $fechaHoraActual)
     {
-        $this->correoE = $correoE;
-        $this->codigoRecuperacion = $codigoRecuperacion;
+        $this->correo = $correo;
+        $this->usuario = $usuario;
+        $this->fechaHoraActual = $fechaHoraActual;
     }
+    
 
     /**
      * Get the message envelope.
@@ -31,7 +35,7 @@ class FamiliaresEnvioCodigoRecuperacion extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Codigo de recuperacion',
+            subject: 'Notificacion de Recuperacion de Contraseña',
         );
     }
 
@@ -41,10 +45,11 @@ class FamiliaresEnvioCodigoRecuperacion extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'Mails.familiaresEnvioCodigoRecuperacion',
-            with: [
-                'correoE' => $this->correoE,
-                'codigoRecuperacion' => $this->codigoRecuperacion
+            view: 'Mails.cuidadoresNotificarFamiliarRecuperacion',
+            with:[
+                'correo' => $this->correo,
+                'usuario' => $this->usuario,
+                'fechaHoraActual' => $this->fechaHoraActual
             ]
         );
     }

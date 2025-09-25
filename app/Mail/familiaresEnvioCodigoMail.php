@@ -31,7 +31,7 @@ class familiaresEnvioCodigoMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Familiares Envio Codigo Mail',
+            subject: 'Verificacion de cuenta',
         );
     }
 
