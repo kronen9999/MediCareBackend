@@ -18,6 +18,8 @@ class familiaresEnvioCodigoRecuperacion implements ShouldQueue
      * Create a new job instance.
      */
 
+    public $tries = 5;
+    public $timeout = 30;
         public $correoE;
     public $codigoRecuperacion;
     public function __construct($correoE,$codigoRecuperacion)
