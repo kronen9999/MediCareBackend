@@ -18,6 +18,9 @@ class cuidadoresEnviCodigoRecuperacion implements ShouldQueue
 
     public $correo;
     public $codigo;
+
+    public $tries = 5;
+    public $timeout = 300;
     /**
      * Create a new job instance.
      */
