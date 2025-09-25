@@ -159,7 +159,7 @@
 														<tr>
 															<td class="pad" style="width:100%;">
 																<div class="alignment" align="center">
-                                                                    <div style="max-width: 500px;"><img src="http://localhost//Integrador9/MediCareBackend/images/medicarelogo.png" alt="Descripción" style="display: block; height: auto; border: 0; width: 100%;" width="500" alt title height="auto"></div>
+                                                                    <div style="max-width: 500px;"><img src="https://085cb14e85.imgdist.com/pub/bfra/tdqbpcts/ofs/m81/9sq/medicarelogo.png" alt="Descripción" style="display: block; height: auto; border: 0; width: 100%;" width="500" alt title height="auto"></div>
 																</div>
 															</td>
 														</tr>

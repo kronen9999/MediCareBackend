@@ -16,13 +16,16 @@ class cuidadoresNotificarFamiliarRecuperacion extends Mailable
     public $correo;
     public $usuario;
 
+    public $fechaHoraActual;
+
     /**
      * Create a new message instance.
      */
-    public function __construct($correo, $usuario)
+    public function __construct($correo, $usuario, $fechaHoraActual)
     {
         $this->correo = $correo;
         $this->usuario = $usuario;
+        $this->fechaHoraActual = $fechaHoraActual;
     }
     
 
@@ -45,7 +48,8 @@ class cuidadoresNotificarFamiliarRecuperacion extends Mailable
             view: 'Mails.cuidadoresNotificarFamiliarRecuperacion',
             with:[
                 'correo' => $this->correo,
-                'usuario' => $this->usuario
+                'usuario' => $this->usuario,
+                'fechaHoraActual' => $this->fechaHoraActual
             ]
         );
     }

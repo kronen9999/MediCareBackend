@@ -178,8 +178,9 @@ $correo=$request->CorreoE;
 
         $UsernameRecuperar=$Usuario->Usuario;
         $CorreoFamiliar=$Usuario->familiar->CorreoE;
+        $fechaHoraActual = now()->toDateTimeString();
 
-        cuidadoresNotificarFamiliarRecuperacion::dispatch($UsernameRecuperar, $CorreoFamiliar);
+        cuidadoresNotificarFamiliarRecuperacion::dispatch($UsernameRecuperar, $CorreoFamiliar, $fechaHoraActual);
 
         return response()->json(['message' => 'Notificacion enviada al familiar'], 200);
         

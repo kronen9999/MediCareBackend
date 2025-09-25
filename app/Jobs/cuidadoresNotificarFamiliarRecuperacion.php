@@ -17,13 +17,19 @@ class cuidadoresNotificarFamiliarRecuperacion implements ShouldQueue
 
      public $usuario;
      public $correo;
+
+     public $fechaHoraActual;
+
+     public $tries = 5;
+        public $timeout = 120;
     /**
      * Create a new job instance.
      */
-    public function __construct($usuario, $correo)
+    public function __construct($usuario, $correo, $fechaHoraActual)
     {
         $this->usuario = $usuario;
         $this->correo = $correo;
+        $this->fechaHoraActual = $fechaHoraActual;
     }
 
     /**
@@ -31,6 +37,6 @@ class cuidadoresNotificarFamiliarRecuperacion implements ShouldQueue
      */
     public function handle(): void
     {
-        Mail::to($this->correo)->send(new CuidadoresNFR($this->correo, $this->usuario));
+        Mail::to($this->correo)->send(new CuidadoresNFR($this->correo, $this->usuario, $this->fechaHoraActual));
     }
 }
