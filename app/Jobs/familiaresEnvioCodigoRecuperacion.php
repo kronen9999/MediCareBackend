@@ -4,7 +4,7 @@ namespace App\Jobs;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
-use App\Mail\FamiliaresEnvioCodigoRecuperacion as famECR;
+use App\Mail\familiaresEnvioCodigoR as famECR;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
