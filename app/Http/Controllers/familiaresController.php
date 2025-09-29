@@ -6,7 +6,7 @@ use App\Jobs\familiaresEnvioCodigoRecuperacion;
 use App\Jobs\familiaresEnvioCodigoVerificacion;
 use App\Models\cuidadores;
 use App\Models\familiares as fam;
-
+use App\Models\informacionContactoFamiliar as icf;
 use App\Models\informacionContactoCuidador;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -332,6 +332,7 @@ $correo=$request->CorreoE;
 
     /////////////////////////////////////////////////////////////////Metodos para el apartado de perfil del familiar//////////////////////////////////////////////////////////////////////////////////////
 
+    //metodo para obtener la informacion del perfil del familiar
     public function ObtenerPerfil(Request $request)
     {
       try{
@@ -374,6 +375,61 @@ $correo=$request->CorreoE;
         "Usuario"=>$familiar->Usuario,
     ]],200);
 
+    }
+
+    public function ActualizarInformacionPersonal(Request $request)
+    {
+     try{
+        $request->validate(["IdFamiliar"=>'required',
+        "TokenAcceso"=>'required',
+        "Nombre"=>["nullable","string","max:100"],
+        "ApellidoP"=>["nullable","string","max:100"],
+        "ApellidoM"=>["nullable","string","max:100"],
+        "Direccion"=>["nullable","string","max:250"],
+        "Telefono1"=>["nullable","numeric","digits:10"],
+        "Telefono2"=>["nullable","numeric","digits:10"]]);
+     }catch(\Illuminate\Validation\ValidationException $e){
+        $firstError = collect($e->errors())->flatten()->first();
+           return response()->json(['error' => $firstError], 422);
+     }
+     $familiar = fam::where('IdFamiliar',$request->IdFamiliar)->first();
+        if (!$familiar)
+        {
+            return response()->json(['message' => 'Familiar No encontrado'], 404);
+        }
+        if ($familiar->TokenAcceso != $request->TokenAcceso)
+        {
+            return response()->json(['message' => 'Token de acceso incorrecto'], 401);
+        }
+        $informacionFamiliar=icf::where('IdFamiliar',$request->IdFamiliar)->first();
+        if (!$informacionFamiliar)
+        {
+            return response()->json(['message' => 'Información de contacto no encontrada'], 404);
+        }
+
+        try{
+            DB::beginTransaction();
+
+            $familiar->Nombre=$request->Nombre;
+            $familiar->ApellidoP=$request->ApellidoP;
+            $familiar->ApellidoM=$request->ApellidoM;
+            $familiar->save();
+            $informacionFamiliar->Direccion=$request->Direccion;
+            $informacionFamiliar->Telefono1=$request->Telefono1;
+            $informacionFamiliar->Telefono2=$request->Telefono2;
+            $informacionFamiliar->save();
+            DB::commit();
+
+            return response()->json(['Message'=>'Información actualizada'],200);
+
+        }catch(\Exception $e){
+            DB::rollBack();
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+
+        
+       
+     
     }
 
 }

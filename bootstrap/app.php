@@ -23,7 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
            'Cuidadores/VerificarCodigoRecuperacion',
            'Cuidadores/RestablecerContrasena',
            'Cuidadores/AlertaFamiliar',
-           
+           'Familiares/Perfil/ActualizarInformacionPersonal',
         ]);
         //
     })
