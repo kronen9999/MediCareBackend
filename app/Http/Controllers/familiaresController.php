@@ -59,6 +59,12 @@ class familiaresController extends Controller
             $tokenAcceso = Str::random(50);
             $familiar->TokenAcceso = $tokenAcceso;
             $familiar->save();
+            $informacionContactoFamiliar = $familiar->informacionContactoFamiliar()->create([
+                'Direccion' => $request->Direccion,
+                'Telefono1' => $request->Telefono1,
+                'Telefono2' => $request->Telefono2,
+            ]);
+            $informacionContactoFamiliar->save();
 
            familiaresEnvioCodigoVerificacion::dispatch($request->CorreoE,$codigoVerificacion);
             DB::commit();
@@ -324,5 +330,50 @@ $correo=$request->CorreoE;
         }
     }
 
+    /////////////////////////////////////////////////////////////////Metodos para el apartado de perfil del familiar//////////////////////////////////////////////////////////////////////////////////////
+
+    public function ObtenerPerfil(Request $request)
+    {
+      try{
+
+        $request->validate(['IdFamiliar'=>'required',
+        'TokenAcceso'=>'required']);
+
+      }catch(\Illuminate\Validation\ValidationException $e){
+         $firstError = collect($e->errors())->flatten()->first();
+            return response()->json(['error' => $firstError], 422);
+      }
+
+      $familiar=fam::where('IdFamiliar',$request->IdFamiliar)->first();
+        if (!$familiar)
+        {
+            return response()->json(['message' => 'Familiar No encontrado'], 404);
+        }
+        if ($familiar->TokenAcceso != $request->TokenAcceso)
+        {
+            return response()->json(['message' => 'Token de acceso incorrecto'], 401);
+        }
+        
+        
+        $informacionFamiliar=$familiar->informacionContactoFamiliar()->first();
+  
+        if (!$informacionFamiliar) 
+            {
+            return response()->json(['message' => 'Información de contacto no encontrada'], 404);
+            }
+        return response()->json(["InformacionPersonal"=>[
+            "Nombbre"=>$familiar->Nombre,
+            "ApellidoP"=>$familiar->ApellidoP,
+            "ApellidoM"=>$familiar->ApellidoM,
+            "Direccion"=>$informacionFamiliar->Direccion,
+            "Telefono1"=>$informacionFamiliar->Telefono1,
+            "Telefono2"=>$informacionFamiliar->Telefono2,
+        ],
+    "InformacionCuenta"=>[
+        "CorreoE"=>$familiar->CorreoE,
+        "Usuario"=>$familiar->Usuario,
+    ]],200);
+
+    }
 
 }

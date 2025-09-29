@@ -10,6 +10,13 @@ class informacionContactoFamiliar extends Model
    
     public $timestamps = false; 
 
+    protected $fillable = [
+        'IdFamiliar',
+        'Direccion',
+        'Telefono1',
+        'Telefono2',
+    ];
+
     
 
  
