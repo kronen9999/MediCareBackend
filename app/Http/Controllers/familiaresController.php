@@ -539,6 +539,126 @@ $correo=$request->CorreoE;
         }
     }
 
+    //Editar informacion de perfil del cuidador 
+
+    public function editarCuidadorInformacionPerfil(Request $request)
+    {
+     try{
+    $request->validate([
+        "IdFamiliar"=>['Required'],
+        "TokenAcceso"=>['Required'],
+        "IdCuidador"=>['Required'],
+        "Nombre"=>["nullable","string","max:100"],
+        "ApellidoP"=>["nullable","string","max:100"],
+        "ApellidoM"=>["nullable","string","max:100"],
+        "Direccion"=>["nullable","string","max:250"],
+        "Telefono1"=>["nullable","numeric","digits:10"],
+        "Telefono2"=>["nullable","numeric","digits:10"],
+    ]);
+     }catch(\Illuminate\Validation\ValidationException $e){
+        $firstError = collect($e->errors())->flatten()->first();
+           return response()->json(['error' => $firstError], 422);
+     }
+
+     $familiar = fam::where('IdFamiliar',$request->IdFamiliar)->first();
+        if (!$familiar)
+        {
+            return response()->json(['message' => 'Familiar No encontrado'], 404);
+        }
+        if ($familiar->TokenAcceso != $request->TokenAcceso)
+        {
+            return response()->json(['message' => 'Token de acceso incorrecto'], 401);
+        }
+
+        $cuidador=cuidadores::where('IdCuidador',$request->IdCuidador)->first();
+        if (!$cuidador)
+        {
+            return response()->json(['message' => 'Cuidador No encontrado'], 404);
+        }
+        if ($cuidador->IdFamiliar != $request->IdFamiliar)
+        {
+            return response()->json(['message' => 'El cuidador no pertenece a este familiar'], 403);
+        }
+
+        $informacionContactoCuidador=informacionContactoCuidador::where('IdCuidador',$request->IdCuidador)->first();
+        if (!$informacionContactoCuidador)
+        {
+            return response()->json(['message' => 'Información de contacto no encontrada'], 404);
+        }
+
+        try{
+            DB::beginTransaction();
+
+            $cuidador->Nombre=$request->Nombre;
+            $cuidador->ApellidoP=$request->ApellidoP;
+            $cuidador->ApellidoM=$request->ApellidoM;
+            $cuidador->save();
+            $informacionContactoCuidador->Direccion=$request->Direccion;
+            $informacionContactoCuidador->Telefono1=$request->Telefono1;
+            $informacionContactoCuidador->Telefono2=$request->Telefono2;
+            $informacionContactoCuidador->save();
+            DB::commit();
+
+            return response()->json(['message'=>'Información del cuidador actualizada'],200);
+
+        }catch(\Exception $e){
+            DB::rollBack();
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+
+    }
+
+    //Metodo para mostrar los cuidadores de un familiar
+
+    public function obtenerCuidadores(Request $request)
+    {
+        try{
+            $request->validate([
+                'IdFamiliar'=>['Required'],
+                'TokenAcceso'=>['Required'],
+            ]);
+        }catch(\Illuminate\Validation\ValidationException $e){
+            $firstError = collect($e->errors())->flatten()->first();
+               return response()->json(['error' => $firstError], 422);
+         }
+
+         $familiar = fam::where('IdFamiliar',$request->IdFamiliar)->first();
+         if (!$familiar)
+         {
+             return response()->json(['message' => 'Familiar No encontrado'], 404);
+         }
+         if ($familiar->TokenAcceso != $request->TokenAcceso)
+         {
+             return response()->json(['message' => 'Token de acceso incorrecto'], 401);
+         }
+
+         $cuidadores = cuidadores::where('IdFamiliar', $request->IdFamiliar)->get();
+
+         if ($cuidadores->isEmpty()) {
+             return response()->json(['message' => 'No se encontraron cuidadores'], 204);
+         }
+
+         $resultado = [];
+
+         foreach ($cuidadores as $cuidador) {
+             $infoContacto = informacionContactoCuidador::where('IdCuidador', $cuidador->IdCuidador)->first();
+
+             $resultado[] = [
+                 'IdCuidador' => $cuidador->IdCuidador,
+                 'Nombre' => $cuidador->Nombre,
+                 'ApellidoP' => $cuidador->ApellidoP,
+                 'ApellidoM' => $cuidador->ApellidoM,
+                 'CorreoE' => $cuidador->CorreoE,
+                 'Usuario' => $cuidador->Usuario,
+                 'Direccion' => $infoContacto->Direccion,
+                 'Telefono1' => $infoContacto->Telefono1,
+                 'Telefono2' => $infoContacto->Telefono2,
+             ];
+         }
+
+         return response()->json(['Cuidadores' => $resultado], 200);
+    }
+
 
 
 }
