@@ -14,4 +14,5 @@ Route::post('Familiares/AgregarCuidador',[familiaresController::class,'agregarCu
 Route::get('Familiares/Perfil/ObtenerPerfil',[familiaresController::class,'ObtenerPerfil']);
 Route::post('Familiares/Perfil/ActualizarInformacionPersonal',[familiaresController::class,'ActualizarInformacionPersonal']);
 Route::post('Familiares/Perfil/ActualizarInformacionCuenta',[familiaresController::class,'ActualizarInformacionCuenta']);
+Route::post('Familiares/Perfil/ActualizarContrasena',[familiaresController::class,'actualizarContrasena']);
 Route::get('Familiares/getInfo',[familiaresController::class,'getInfo']);

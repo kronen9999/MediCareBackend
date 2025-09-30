@@ -24,7 +24,8 @@ return Application::configure(basePath: dirname(__DIR__))
            'Cuidadores/RestablecerContrasena',
            'Cuidadores/AlertaFamiliar',
            'Familiares/Perfil/ActualizarInformacionPersonal',
-           'Familiares/Perfil/ActualizarInformacionCuenta'
+           'Familiares/Perfil/ActualizarInformacionCuenta',
+           'Familiares/Perfil/ActualizarContrasena'
         ]);
         //
     })

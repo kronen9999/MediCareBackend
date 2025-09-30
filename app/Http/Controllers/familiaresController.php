@@ -487,4 +487,52 @@ $correo=$request->CorreoE;
         }
     }
 
+    //Metodo para actualizar la contrasena del familiar
+
+    public function actualizarContrasena (Request $request)
+    {
+     
+        try{
+          $request->validate([
+            "IdFamiliar"=>'required',
+            "TokenAcceso"=>'required',
+            "ContrasenaActual"=>["required","min:8","max:20"],
+            "NuevaContrasena"=>["required","min:8","max:20"],
+          ]);
+        }catch(\Illuminate\Validation\ValidationException $e){
+           $firstError = collect($e->errors())->flatten()->first();
+              return response()->json(['error' => $firstError], 422);
+        }
+
+        $familiar=fam::where('IdFamiliar',$request->IdFamiliar)->first();
+        if (!$familiar)
+        {
+            return response()->json(['message' => 'Familiar No encontrado'], 404);
+        }
+
+        if ($familiar->TokenAcceso != $request->TokenAcceso)
+        {
+            return response()->json(['message' => 'Token de acceso incorrecto'], 401);
+        }
+
+        if (!Hash::check($request->ContrasenaActual, $familiar->Contrasena))
+        {
+            return response()->json(['message' => 'Contraseña actual incorrecta'], 401);
+        }
+
+        try{
+            DB::beginTransaction();
+
+            $familiar->Contrasena = $request->NuevaContrasena;
+            $familiar->save();
+            DB::commit();
+
+            return response()->json(['message'=>'Contraseña actualizada'],200);
+
+        }catch(\Exception $e){
+            DB::rollBack();
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+    }
+
 }
