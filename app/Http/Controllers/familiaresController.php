@@ -715,5 +715,70 @@ $correo=$request->CorreoE;
         ],200);
     }
 
+    //Metodo para actualizar la informacion de la cuenta del cuidador
+
+    public function editarCuidadorInformacionCuenta(Request $request)
+    {
+        try{
+            $request->validate([
+                'IdFamiliar'=>['Required'],
+                'TokenAcceso'=>['Required'],
+                'IdCuidador'=>['Required'],
+                'CorreoE'=>["nullable","string","max:100","email"],
+                'Usuario'=>["required","string","max:50"],
+            ]);
+        }catch(\Illuminate\Validation\ValidationException $e){
+            $firstError = collect($e->errors())->flatten()->first();
+               return response()->json(['error' => $firstError], 422);
+         }
+
+         $familiar = fam::where('IdFamiliar',$request->IdFamiliar)->first();
+        if (!$familiar)
+        {
+            return response()->json(['message' => 'Familiar No encontrado'], 404);
+        }
+        if ($familiar->TokenAcceso != $request->TokenAcceso)
+        {
+            return response()->json(['message' => 'Token de acceso incorrecto'], 401);
+        }
+        $cuidador=$familiar->cuidadores()->where('IdCuidador',$request->IdCuidador)->first();
+        if (!$cuidador)
+        {
+            return response()->json(['message' => 'Cuidador No encontrado'], 404);
+        }
+        if ($cuidador->IdFamiliar != $request->IdFamiliar)
+        {
+            return response()->json(['message' => 'El cuidador no pertenece a este familiar'], 403);
+        }
+        try{
+            DB::beginTransaction();
+
+            if (!empty($request->CorreoE) && $request->CorreoE != $cuidador->CorreoE) {
+                if (cuidadores::where('CorreoE', $request->CorreoE)->exists()) {
+                    return response()->json(['error' => 'El correo ya está en uso por otro usuario'], 422);
+                }
+           $cuidador->CorreoE = $request->CorreoE;
+             }
+             if (empty($request->CorreoE)){
+                $cuidador->CorreoE = null;
+               }
+             
+            if ($request->Usuario != $cuidador->Usuario) {
+                if (cuidadores::where('Usuario', $request->Usuario)->exists()) {
+                    return response()->json(['error' => 'El usuario ya está en uso por otro usuario'], 422);
+                }
+           $cuidador->Usuario = $request->Usuario;
+             }
+            $cuidador->save();
+            DB::commit();
+
+            return response()->json(['message'=>'Información del cuidador actualizada'],200);
+    }
+    catch(\Exception $e){
+        DB::rollBack();
+        return response()->json(['message' => $e->getMessage()], 500);
+    }
+    }
+
 
 }

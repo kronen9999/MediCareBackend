@@ -22,3 +22,4 @@ Route::post('Familiares/Cuidadores/EditarCuidadorInformacionPerfil',[familiaresC
 Route::get('Familiares/Cuidadores/ObtenerCuidadores',[familiaresController::class,'obtenerCuidadores']);
 Route::get('Familiares/Cuidadores/ObtenerCuidador',[familiaresController::class,'obtenerCuidador']);
 Route::get('Familiares/getInfo',[familiaresController::class,'getInfo']);
+Route::post('Familiares/Cuidadores/EditarCuidadorInformacionCuenta',[familiaresController::class,'editarCuidadorInformacionCuenta']);

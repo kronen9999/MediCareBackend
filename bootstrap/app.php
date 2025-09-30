@@ -27,6 +27,7 @@ return Application::configure(basePath: dirname(__DIR__))
            'Familiares/Perfil/ActualizarInformacionCuenta',
            'Familiares/Perfil/ActualizarContrasena',
            'Familiares/Cuidadores/EditarCuidadorInformacionPerfil',
+           'Familiares/Cuidadores/EditarCuidadorInformacionCuenta'
            
         ]);
         //
