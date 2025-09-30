@@ -263,74 +263,7 @@ $correo=$request->CorreoE;
         return response()->json(['message' => 'Contrasena restablecida'], 200);
     }
 
-    //Apartados relacionados a la tabla de cuidadores
-
-    public function agregarCuidador(Request $request)
-    {
-        try{
-
-            $request->validate([
-                'IdFamiliar'=>['Required'],
-                'TokenAcceso'=>['Required'],
-                'Nombre'=>["Required","string","max:100"],
-                'ApellidoP'=>["Required","string","max:100"],
-                'ApellidoM'=>["nullable","string","max:100"],
-                'Direccion'=>["nullable","string","max:250"],
-                'Telefono1'=>["nullable","numeric","digits:10"],
-                'Telefono2'=>["nullable","numeric","digits:10"],
-                'CorreoE'=>["nullable","string","max:100","email","unique:cuidadores,CorreoE"],
-                'Usuario'=>["Required","max:50","string","unique:cuidadores,Usuario"],
-                'Contrasena'=>["Required","min:3","max:20"],
-            ]);
-
-        }catch(\Illuminate\Validation\ValidationException $e){
-           $firstError = collect($e->errors())->flatten()->first();
-              return response()->json(['error' => $firstError], 422);
-        }
-
-        try{
-            DB::beginTransaction();
-
-            $familiar=fam::where('IdFamiliar',$request->IdFamiliar)->first();
-
-            if (!$familiar)
-            {
-                return response()->json(['message' => 'Familiar No encontrado'], 404);
-            }
-
-            if ($familiar->TokenAcceso != $request->TokenAcceso)
-            {
-                return response()->json(['message' => 'Token de acceso incorrecto'], 401);
-            }
-
-            $cuidador= new cuidadores();
-
-            $cuidador->IdFamiliar=$request->IdFamiliar;
-            $cuidador->Nombre=$request->Nombre;
-            $cuidador->ApellidoP=$request->ApellidoP;
-            $cuidador->ApellidoM=$request->ApellidoM;
-            $cuidador->CorreoE=$request->CorreoE;
-            $cuidador->Usuario=$request->Usuario;
-            $cuidador->Contrasena=$request->Contrasena;
-            $cuidador->TokenAcceso=Str::random(50);
-            $cuidador->save();
-
-            $cuidador->informacionContactoCuidador()->create([
-                'IdCuidador' => $cuidador->IdCuidador,
-                'Direccion' => $request->Direccion,
-                'Telefono1' => $request->Telefono1,
-                'Telefono2' => $request->Telefono2,
-            ]);
-            DB::commit();
-            return response()->json(['message'=>'Cuidador agregado'],201);
-
-
-            
-        }catch(\Exception $e){
-            DB::rollBack();
-            return response()->json(['message' => $e->getMessage()], 500);
-        }
-    }
+    
 
     /////////////////////////////////////////////////////////////////Metodos para el apartado de perfil del familiar//////////////////////////////////////////////////////////////////////////////////////
 
@@ -534,5 +467,78 @@ $correo=$request->CorreoE;
             return response()->json(['message' => $e->getMessage()], 500);
         }
     }
+
+    ///////////////////////////////////////////////////////////////////////////Rutas para Administrar los cuidadores//////////
+
+    //Metodo para agregar a un cuidador
+
+    public function agregarCuidador(Request $request)
+    {
+        try{
+
+            $request->validate([
+                'IdFamiliar'=>['Required'],
+                'TokenAcceso'=>['Required'],
+                'Nombre'=>["Required","string","max:100"],
+                'ApellidoP'=>["Required","string","max:100"],
+                'ApellidoM'=>["nullable","string","max:100"],
+                'Direccion'=>["nullable","string","max:250"],
+                'Telefono1'=>["nullable","numeric","digits:10"],
+                'Telefono2'=>["nullable","numeric","digits:10"],
+                'CorreoE'=>["nullable","string","max:100","email","unique:cuidadores,CorreoE"],
+                'Usuario'=>["Required","max:50","string","unique:cuidadores,Usuario"],
+                'Contrasena'=>["Required","min:3","max:20"],
+            ]);
+
+        }catch(\Illuminate\Validation\ValidationException $e){
+           $firstError = collect($e->errors())->flatten()->first();
+              return response()->json(['error' => $firstError], 422);
+        }
+
+        try{
+            DB::beginTransaction();
+
+            $familiar=fam::where('IdFamiliar',$request->IdFamiliar)->first();
+
+            if (!$familiar)
+            {
+                return response()->json(['message' => 'Familiar No encontrado'], 404);
+            }
+
+            if ($familiar->TokenAcceso != $request->TokenAcceso)
+            {
+                return response()->json(['message' => 'Token de acceso incorrecto'], 401);
+            }
+
+            $cuidador= new cuidadores();
+
+            $cuidador->IdFamiliar=$request->IdFamiliar;
+            $cuidador->Nombre=$request->Nombre;
+            $cuidador->ApellidoP=$request->ApellidoP;
+            $cuidador->ApellidoM=$request->ApellidoM;
+            $cuidador->CorreoE=$request->CorreoE;
+            $cuidador->Usuario=$request->Usuario;
+            $cuidador->Contrasena=$request->Contrasena;
+            $cuidador->TokenAcceso=Str::random(50);
+            $cuidador->save();
+
+            $cuidador->informacionContactoCuidador()->create([
+                'IdCuidador' => $cuidador->IdCuidador,
+                'Direccion' => $request->Direccion,
+                'Telefono1' => $request->Telefono1,
+                'Telefono2' => $request->Telefono2,
+            ]);
+            DB::commit();
+            return response()->json(['message'=>'Cuidador agregado'],201);
+
+
+            
+        }catch(\Exception $e){
+            DB::rollBack();
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+    }
+
+
 
 }
