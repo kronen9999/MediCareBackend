@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use PhpParser\Node\Stmt\TryCatch;
 
+use function PHPUnit\Framework\isEmpty;
+
 class familiaresController extends Controller
 {
     //metodo para obtener la informacionGeneral
@@ -320,7 +322,7 @@ $correo=$request->CorreoE;
                 'Telefono2' => $request->Telefono2,
             ]);
             DB::commit();
-            return response()->json(['Message'=>'Cuidador agregado'],201);
+            return response()->json(['message'=>'Cuidador agregado'],201);
 
 
             
@@ -377,6 +379,8 @@ $correo=$request->CorreoE;
 
     }
 
+    //Metodo para actualizar la informacion personal del familiar
+
     public function ActualizarInformacionPersonal(Request $request)
     {
      try{
@@ -420,16 +424,67 @@ $correo=$request->CorreoE;
             $informacionFamiliar->save();
             DB::commit();
 
-            return response()->json(['Message'=>'Información actualizada'],200);
+            return response()->json(['message'=>'Información actualizada'],200);
 
         }catch(\Exception $e){
             DB::rollBack();
             return response()->json(['message' => $e->getMessage()], 500);
         }
+    
+    }
 
-        
-       
-     
+    //Metodo para actualizar la informacion de la cuenta del familiar
+    public function ActualizarInformacionCuenta(Request $request)
+    {
+        try{
+        $request->validate(["IdFamiliar"=>'required',
+        "TokenAcceso"=>'required',
+       "CorreoE"=>["required","email","max:100"],
+       "Usuario"=>["nullable","string","max:50",]]);
+     }catch(\Illuminate\Validation\ValidationException $e){
+        $firstError = collect($e->errors())->flatten()->first();
+           return response()->json(['error' => $firstError], 422);
+     }
+
+     $familiar=fam::where('IdFamiliar',$request->IdFamiliar)->first();
+        if (!$familiar)
+        {
+            return response()->json(['message' => 'Familiar No encontrado'], 404);
+        }
+        if ($familiar->TokenAcceso != $request->TokenAcceso)
+        {
+            return response()->json(['message' => 'Token de acceso incorrecto'], 401);
+        }
+
+        try{
+            DB::beginTransaction();
+
+            if (!empty($request->CorreoE) && $request->CorreoE != $familiar->CorreoE) {
+                if (fam::where('CorreoE', $request->CorreoE)->exists()) {
+                    return response()->json(['error' => 'El correo ya está en uso por otro usuario'], 422);
+                }
+           $familiar->CorreoE = $request->CorreoE;
+             }
+             
+            if ($request->Usuario != $familiar->Usuario&&!empty($request->Usuario)) {
+                if (fam::where('Usuario', $request->Usuario)->exists()) {
+                    return response()->json(['error' => 'El usuario ya está en uso por otro usuario'], 422);
+                }
+           $familiar->Usuario = $request->Usuario;
+             }
+           if (empty($request->Usuario)){
+            $familiar->Usuario = null;
+           }
+
+            $familiar->save();
+            DB::commit();
+
+            return response()->json(['message'=>'Información actualizada'],200);
+
+        }catch(\Exception $e){
+            DB::rollBack();
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
     }
 
 }
