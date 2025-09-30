@@ -20,4 +20,5 @@ Route::post('Familiares/Perfil/ActualizarContrasena',[familiaresController::clas
 Route::post('Familiares/Cuidadores/AgregarCuidador',[familiaresController::class,'agregarCuidador']);
 Route::post('Familiares/Cuidadores/EditarCuidadorInformacionPerfil',[familiaresController::class,'editarCuidadorInformacionPerfil']);
 Route::get('Familiares/Cuidadores/ObtenerCuidadores',[familiaresController::class,'obtenerCuidadores']);
+Route::get('Familiares/Cuidadores/ObtenerCuidador',[familiaresController::class,'obtenerCuidador']);
 Route::get('Familiares/getInfo',[familiaresController::class,'getInfo']);

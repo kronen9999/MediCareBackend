@@ -659,6 +659,61 @@ $correo=$request->CorreoE;
          return response()->json(['Cuidadores' => $resultado], 200);
     }
 
+    //Metodo para obtener un cuidador en especifico
+
+    public function obtenerCuidador (Request $request)
+    {
+      try{
+
+        $request->validate([
+            'IdFamiliar'=>['Required'],
+            'TokenAcceso'=>['Required'],
+            'IdCuidador'=>['Required'],
+        ]);
+
+      }catch(\Illuminate\Validation\ValidationException $e){
+         $firstError = collect($e->errors())->flatten()->first();
+            return response()->json(['error' => $firstError], 422);
+      }
+
+      $familiar = fam::where('IdFamiliar',$request->IdFamiliar)->first();
+        if (!$familiar)
+        {
+            return response()->json(['message' => 'Familiar No encontrado'], 404);
+        }
+        if ($familiar->TokenAcceso != $request->TokenAcceso)
+        {
+            return response()->json(['message' => 'Token de acceso incorrecto'], 401);
+        }
+
+        $cuidador=$familiar->cuidadores()->where('IdCuidador',$request->IdCuidador)->first();
+        if (!$cuidador)
+        {
+            return response()->json(['message' => 'Cuidador No encontrado'], 404);
+        }
+        if ($cuidador->IdFamiliar != $request->IdFamiliar)
+        {
+            return response()->json(['message' => 'El cuidador no pertenece a este familiar'], 403);
+        }
+
+        $informacionContactoCuidador=informacionContactoCuidador::where('IdCuidador',$request->IdCuidador)->first();
+        if (!$informacionContactoCuidador)
+        {
+            return response()->json(['message' => 'Información de contacto no encontrada'], 404);
+        }
+
+        return response()->json([
+            'IdCuidador' => $cuidador->IdCuidador,
+            'Nombre' => $cuidador->Nombre,
+            'ApellidoP' => $cuidador->ApellidoP,
+            'ApellidoM' => $cuidador->ApellidoM,
+            'CorreoE' => $cuidador->CorreoE,
+            'Usuario' => $cuidador->Usuario,
+            'Direccion' => $informacionContactoCuidador->Direccion,
+            'Telefono1' => $informacionContactoCuidador->Telefono1,
+            'Telefono2' => $informacionContactoCuidador->Telefono2,
+        ],200);
+    }
 
 
 }
