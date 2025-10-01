@@ -780,5 +780,59 @@ $correo=$request->CorreoE;
     }
     }
 
+    //Metodo para cambiar la contrasena de un cuidador
+
+    public function cambiarContrasenaCuidador(Request $request)
+    {
+  
+     try{
+        $request->validate([
+            'IdFamiliar'=>['Required'],
+            'TokenAcceso'=>['Required'],
+            'IdCuidador'=>['Required'],
+            'NuevaContrasena'=>["Required","min:8","max:20"],
+        ]);
+     }catch(\Illuminate\Validation\ValidationException $e)
+     {
+     $firstError = collect($e->errors())->flatten()->first();
+        return response()->json(['error' => $firstError], 422);
+     }
+
+        $familiar = fam::where('IdFamiliar',$request->IdFamiliar)->first();
+            if (!$familiar)
+            {
+                return response()->json(['message' => 'Familiar No encontrado'], 404);
+            }
+            if ($familiar->TokenAcceso != $request->TokenAcceso)
+            {
+                return response()->json(['message' => 'Token de acceso incorrecto'], 401);
+            }
+    
+            $cuidador=$familiar->cuidadores()->where('IdCuidador',$request->IdCuidador)->first();
+            if (!$cuidador)
+            {
+                return response()->json(['message' => 'Cuidador No encontrado'], 404);
+            }
+            if ($cuidador->IdFamiliar != $request->IdFamiliar)
+            {
+                return response()->json(['message' => 'El cuidador no pertenece a este familiar'], 403);
+            }
+    
+            try{
+                DB::beginTransaction();
+    
+                $cuidador->Contrasena = $request->NuevaContrasena;
+                $cuidador->save();
+                DB::commit();
+    
+                return response()->json(['message'=>'Contraseña del cuidador actualizada'],200);
+    
+            }catch(\Exception $e){
+                DB::rollBack();
+                return response()->json(['message' => $e->getMessage()], 500);
+            }
+
+    }
+
 
 }
