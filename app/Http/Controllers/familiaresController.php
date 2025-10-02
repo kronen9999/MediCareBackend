@@ -903,5 +903,55 @@ $correo=$request->CorreoE;
          
     }
 
+    //Metodo para Mostar los pacientes de un familiar
+
+    public function obtenerPacientes(Request $request)
+    {
+    
+     try{
+
+        $request->validate([
+            'IdFamiliar'=>['Required'],
+            'TokenAcceso'=>['Required'],
+        ]);
+
+     }catch(\Illuminate\Validation\ValidationException $e)
+     {
+     $firstError = collect($e->errors())->flatten()->first();
+        return response()->json(['error' => $firstError], 422);
+    }
+
+    $familiar = fam::where('IdFamiliar',$request->IdFamiliar)->first();
+        if (!$familiar)
+        {
+            return response()->json(['message' => 'Familiar No encontrado'], 404);
+        }
+        if ($familiar->TokenAcceso != $request->TokenAcceso)
+        {
+            return response()->json(['message' => 'Token de acceso incorrecto'], 401);
+        }
+
+        $pacientes = $familiar->pacientes()->get();
+        if ($pacientes->isEmpty()) {
+            return response()->json(['message' => 'No se encontraron pacientes'], 204);
+        }
+        $resultado = [];
+        foreach ($pacientes as $paciente) {
+            $infoContacto = $paciente->informacionContactoPaciente()->first();
+
+            $resultado[] = [
+                'IdPaciente' => $paciente->IdPaciente,
+                'Nombre' => $paciente->Nombre,
+                'ApellidoP' => $paciente->ApellidoP,
+                'ApellidoM' => $paciente->ApellidoM,
+                'Direccion' => $infoContacto->Direccion,
+                'Telefono1' => $infoContacto->Telefono1,
+                'Telefono2' => $infoContacto->Telefono2,
+            ];
+        }
+
+        return response()->json(['Pacientes' => $resultado], 200);
+        
+    }
 
 }
