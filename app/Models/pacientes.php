@@ -10,6 +10,12 @@ class pacientes extends Model
    protected $table = 'pacientes';
     protected $primaryKey = 'IdPaciente';
 
+    public $fillable = [
+        'Nombre',
+        'ApellidoP',
+        'ApellidoM',
+    ];
+
     public $timestamps = false;
 
     public function Nombre():Attribute
@@ -46,6 +52,10 @@ class pacientes extends Model
     public function medicamentos()
     {
         return $this->hasMany(medicamentos::class, 'IdPaciente', 'IdPaciente');
+    }
+    public function informacionContactoPaciente()
+    {
+        return $this->hasOne(informacioncontactopacientes::class, 'IdPaciente', 'IdPaciente');
     }
 
     

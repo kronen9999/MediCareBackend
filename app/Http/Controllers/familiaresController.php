@@ -834,5 +834,74 @@ $correo=$request->CorreoE;
 
     }
 
+    /////////////////////////////////////////////Metodos para Administrar pacientes//////////////////////////////////////////////////////////////////////////////////////
+   
+    //Metodo para agregar un paciente
+
+    public function agregarPaciente(Request $request)
+    {
+     
+   try{
+        $request->validate([
+            'IdFamiliar'=>['Required'],
+            'TokenAcceso'=>['Required'],
+            'Nombre'=>["Required","string","max:100"],
+            'ApellidoP'=>["Required","string","max:100"],
+            'ApellidoM'=>["nullable","string","max:100"],
+            'Direccion'=>["nullable","string","max:250"],
+            'Telefono1'=>["nullable","numeric","digits:10"],
+            'Telefono2'=>["nullable","numeric","digits:10"]
+
+        ]);
+     }catch(\Illuminate\Validation\ValidationException $e)
+     {
+     $firstError = collect($e->errors())->flatten()->first();
+        return response()->json(['error' => $firstError], 422);
+     }
+
+     try{
+        DB::beginTransaction();
+           $familiar = fam::where('IdFamiliar',$request->IdFamiliar)->first();
+            if (!$familiar)
+            {
+                return response()->json(['message' => 'Familiar No encontrado'], 404);
+            }
+            if ($familiar->TokenAcceso != $request->TokenAcceso)
+            {
+                return response()->json(['message' => 'Token de acceso incorrecto'], 401);
+            }
+    
+            $paciente=$familiar->pacientes()->create([
+                'Nombre'=>$request->Nombre,
+                'ApellidoP'=>$request->ApellidoP,
+                'ApellidoM'=>$request->ApellidoM,
+            ]);
+
+            $paciente->save();
+           
+            $informacionContactoPaciente=$paciente->informacionContactoPaciente()->create([
+                'IdPaciente'=>$paciente->IdPaciente,
+                'Direccion'=>$request->Direccion,
+                'Telefono1'=>$request->Telefono1,
+                'Telefono2'=>$request->Telefono2,
+            ]);
+            $informacionContactoPaciente->save();
+
+            DB::commit();
+
+            return response()->json(['message'=>'Paciente agregado'],201);
+            
+
+        
+
+     }catch(\Exception $e){
+        DB::rollBack();
+
+        return response()->json(['message' => $e->getMessage()], 500);
+     }
+
+         
+    }
+
 
 }
