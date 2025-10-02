@@ -30,3 +30,4 @@ Route::post('Familiares/Pacientes/AgregarPaciente',[familiaresController::class,
 Route::get('Familiares/Pacientes/ObtenerPacientes',[familiaresController::class,'obtenerPacientes']);
 Route::get('Familiares/Pacientes/ObtenerPaciente',[familiaresController::class,'obtenerPaciente']);
 Route::post('Familiares/Pacientes/EditarPacienteInformacionPerfil',[familiaresController::class,'editarPaciente']);
+Route::post('Familiares/Pacientes/AsignarCuidadorAPaciente',[familiaresController::class,'asignarCuidadorPaciente']);

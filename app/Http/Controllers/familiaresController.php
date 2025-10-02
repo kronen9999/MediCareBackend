@@ -947,6 +947,7 @@ $correo=$request->CorreoE;
                 'Direccion' => $infoContacto->Direccion,
                 'Telefono1' => $infoContacto->Telefono1,
                 'Telefono2' => $infoContacto->Telefono2,
+                'IdCuidador' => $paciente->IdCuidador,
             ];
         }
 
@@ -1005,6 +1006,7 @@ $correo=$request->CorreoE;
             'Direccion' => $informacionContactoPaciente->Direccion,
             'Telefono1' => $informacionContactoPaciente->Telefono1,
             'Telefono2' => $informacionContactoPaciente->Telefono2,
+            'IdCuidador' => $paciente->IdCuidador,
         ],200);
 
     }
@@ -1072,6 +1074,83 @@ $correo=$request->CorreoE;
             DB::commit();
 
             return response()->json(['message'=>'Información del paciente actualizada'],200);
+        }catch(\Exception $e){
+            DB::rollBack();
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+
+    }
+
+    //Metodo para asignar un cuidador a un paciente
+
+    public function asignarCuidadorPaciente(Request $request)
+    {
+
+    try{
+
+       $request->validate([
+        'IdFamiliar'=>['Required'],
+        'TokenAcceso'=>['Required'],
+        'IdPaciente'=>['Required'],
+        'IdCuidador'=>['Required'],
+       ]);
+
+    }catch(\Illuminate\Validation\ValidationException $e)
+    {
+    $firstError = collect($e->errors())->flatten()->first();
+        return response()->json(['error' => $firstError], 422);
+    }
+
+    $familiar=fam::where('IdFamiliar',$request->IdFamiliar)->first();
+        if (!$familiar)
+        {
+            return response()->json(['message' => 'Familiar No encontrado'], 404);
+        }
+        if ($familiar->TokenAcceso != $request->TokenAcceso)
+        {
+            return response()->json(['message' => 'Token de acceso incorrecto'], 401);
+        }
+
+        $paciente=$familiar->pacientes()->where('IdPaciente',$request->IdPaciente)->first();
+        if (!$paciente)
+        {
+            return response()->json(['message' => 'Paciente No encontrado'], 404);
+        }
+        if ($paciente->IdFamiliar != $request->IdFamiliar)
+        {
+            return response()->json(['message' => 'El paciente no pertenece a este familiar'], 403);
+        }
+
+        $cuidador=$familiar->cuidadores()->where('IdCuidador',$request->IdCuidador)->first();
+        if (!$cuidador)
+        {
+            return response()->json(['message' => 'Cuidador No encontrado'], 404);
+        }
+        if ($cuidador->IdFamiliar != $request->IdFamiliar)
+        {
+            return response()->json(['message' => 'El cuidador no pertenece a este familiar'], 403);
+        }
+        
+        if ($cuidador->pacientes()->first())
+            {
+                return response()->json(['message' => 'El cuidador ya está asignado a un paciente'], 409);
+            }       
+
+        if ($paciente->IdCuidador!=null)
+            {
+              return response()->json(['message' => 'El paciente ya tiene un cuidador asignado'], 409);
+            }    
+
+        try{
+            DB::beginTransaction();
+
+           $paciente->IdCuidador=$request->IdCuidador;
+           $paciente->save();
+
+            DB::commit();
+
+            return response()->json(['message'=>'Cuidador asignado al paciente'],201);
+
         }catch(\Exception $e){
             DB::rollBack();
             return response()->json(['message' => $e->getMessage()], 500);
