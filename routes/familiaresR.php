@@ -28,3 +28,4 @@ Route::post('Familiares/Cuidadores/CambiarContrasenaCuidador',[familiaresControl
 //rutas del familiar para administrar pacientes
 Route::post('Familiares/Pacientes/AgregarPaciente',[familiaresController::class,'agregarPaciente']);
 Route::get('Familiares/Pacientes/ObtenerPacientes',[familiaresController::class,'obtenerPacientes']);
+Route::get('Familiares/Pacientes/ObtenerPaciente',[familiaresController::class,'obtenerPaciente']);

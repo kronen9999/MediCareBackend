@@ -954,4 +954,59 @@ $correo=$request->CorreoE;
         
     }
 
+    //Metodo para obtener un paciente en especifico
+
+    public function obtenerPaciente(Request $request)
+    {
+    
+     try{
+        $request->validate([
+            'IdFamiliar'=>['Required'],
+            'TokenAcceso'=>['Required'],
+            'IdPaciente'=>['Required'],
+        ]);
+     }catch(\Illuminate\Validation\ValidationException $e)
+     {
+     $firstError = collect($e->errors())->flatten()->first();
+        return response()->json(['error' => $firstError], 422);
+    }
+
+    $familiar=fam::where('IdFamiliar',$request->IdFamiliar)->first();
+        if (!$familiar)
+        {
+            return response()->json(['message' => 'Familiar No encontrado'], 404);
+        }
+        if ($familiar->TokenAcceso != $request->TokenAcceso)
+        {
+            return response()->json(['message' => 'Token de acceso incorrecto'], 401);
+        }
+
+        $paciente=$familiar->pacientes()->where('IdPaciente',$request->IdPaciente)->first();
+        if (!$paciente)
+        {
+            return response()->json(['message' => 'Paciente No encontrado'], 404);
+        }
+        if ($paciente->IdFamiliar != $request->IdFamiliar)
+        {
+            return response()->json(['message' => 'El paciente no pertenece a este familiar'], 403);
+        }
+
+        $informacionContactoPaciente=$paciente->informacionContactoPaciente()->first();
+        if (!$informacionContactoPaciente)
+        {
+            return response()->json(['message' => 'Información de contacto no encontrada'], 404);
+        }
+
+        return response()->json([
+            'IdPaciente' => $paciente->IdPaciente,
+            'Nombre' => $paciente->Nombre,
+            'ApellidoP' => $paciente->ApellidoP,
+            'ApellidoM' => $paciente->ApellidoM,
+            'Direccion' => $informacionContactoPaciente->Direccion,
+            'Telefono1' => $informacionContactoPaciente->Telefono1,
+            'Telefono2' => $informacionContactoPaciente->Telefono2,
+        ],200);
+
+    }
+
 }
