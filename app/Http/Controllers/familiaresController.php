@@ -1008,5 +1008,74 @@ $correo=$request->CorreoE;
         ],200);
 
     }
+     
+    //Metodo para editar la informacion del paciente
 
+    public function editarPaciente(Request $request)
+    {
+
+      try{
+        $request->validate([
+            'IdFamiliar'=>['Required'],
+            'TokenAcceso'=>['Required'],
+            'IdPaciente'=>['Required'],
+            'Nombre'=>["Required","string","max:100"],
+            'ApellidoP'=>["nullable","string","max:100"],
+            'ApellidoM'=>["nullable","string","max:100"],
+            'Direccion'=>["nullable","string","max:250"],
+            'Telefono1'=>["nullable","numeric","digits:10"],
+            'Telefono2'=>["nullable","numeric","digits:10"]
+        ]);
+      }catch(\Illuminate\Validation\ValidationException $e)
+      {
+        $firstError = collect($e->errors())->flatten()->first();
+        return response()->json(['error' => $firstError], 422);
+      }
+
+      $familiar=fam::where('IdFamiliar',$request->IdFamiliar)->first();
+        if (!$familiar)
+        {
+            return response()->json(['message' => 'Familiar No encontrado'], 404);
+        }
+        if ($familiar->TokenAcceso != $request->TokenAcceso)
+        {
+            return response()->json(['message' => 'Token de acceso incorrecto'], 401);
+        }
+
+        $paciente=$familiar->pacientes()->where('IdPaciente',$request->IdPaciente)->first();
+        if (!$paciente)
+        {
+            return response()->json(['message' => 'Paciente No encontrado'], 404);
+        }
+        if ($paciente->IdFamiliar != $request->IdFamiliar)
+        {
+            return response()->json(['message' => 'El paciente no pertenece a este familiar'], 403);
+        }
+
+        $informacionContactoPaciente=$paciente->informacionContactoPaciente()->first();
+        if (!$informacionContactoPaciente)
+        {
+            return response()->json(['message' => 'Información de contacto no encontrada'], 404);
+        }
+
+        try{
+            DB::beginTransaction();
+
+            $paciente->Nombre=$request->Nombre;
+            $paciente->ApellidoP=$request->ApellidoP;
+            $paciente->ApellidoM=$request->ApellidoM;
+            $paciente->save();
+            $informacionContactoPaciente->Direccion=$request->Direccion;
+            $informacionContactoPaciente->Telefono1=$request->Telefono1;
+            $informacionContactoPaciente->Telefono2=$request->Telefono2;
+            $informacionContactoPaciente->save();
+            DB::commit();
+
+            return response()->json(['message'=>'Información del paciente actualizada'],200);
+        }catch(\Exception $e){
+            DB::rollBack();
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+
+    }
 }
