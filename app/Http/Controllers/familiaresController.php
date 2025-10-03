@@ -264,6 +264,42 @@ $correo=$request->CorreoE;
         return response()->json(['message' => 'Contrasena restablecida'], 200);
     }
 
+    //Metodo para obtener el numero de pacientes y el numero de pacientes registrados
+
+    public function obtenerAtributosGenerales(Request $request)
+    {
+           try{
+
+            $request->validate([
+                'IdFamiliar'=>'required',
+                'TokenAcceso'=>'required',
+            ]);
+
+        }catch(\Illuminate\Validation\ValidationException $e){
+           $firstError = collect($e->errors())->flatten()->first();
+              return response()->json(['error' => $firstError], 422);
+        }
+
+        $familiar=fam::where('IdFamiliar',$request->IdFamiliar)->first();
+        if (!$familiar)
+        {
+            return response()->json(['message' => 'Familiar No encontrado'], 404);
+        }
+        if($familiar->TokenAcceso!=$request->TokenAcceso)
+        {
+            return response()->json(['message' => 'Token de acceso incorrecto'], 401);
+        }
+
+        $numeroPacientes=$familiar->pacientes()->count();
+        $numeroCuidadores=$familiar->cuidadores()->count();
+
+        return response()->json([
+            'NumeroPacientes'=>$numeroPacientes,
+            'NumeroCuidadores'=>$numeroCuidadores,
+        ],200);
+
+    }
+
     
 
     /////////////////////////////////////////////////////////////////Metodos para el apartado de perfil del familiar//////////////////////////////////////////////////////////////////////////////////////

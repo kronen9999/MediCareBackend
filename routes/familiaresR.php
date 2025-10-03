@@ -9,6 +9,7 @@ Route::post('Familiares/Login',[familiaresController::class,'login']);
 Route::post('Familiares/RecupearCuentaPCorreo',[familiaresController::class,'recuperarCuentaPCorreo']);
 Route::post('Familiares/VerificarCodigoRecuperacion',[familiaresController::class,'verificarCodigoRecuperacion']);
 Route::post('Familiares/RestablecerContrasena',[familiaresController::class,'restablecerContrasena']);
+Route::get('Familiares/ObtenerAtributosGenerales',[familiaresController::class,'obtenerAtributosGenerales']);
 
 //rutas del familiar del apartado de perfil
 Route::get('Familiares/Perfil/ObtenerPerfil',[familiaresController::class,'ObtenerPerfil']);
