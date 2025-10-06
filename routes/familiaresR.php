@@ -12,7 +12,7 @@ Route::post('Familiares/RestablecerContrasena',[familiaresController::class,'res
 Route::get('Familiares/ObtenerAtributosGenerales',[familiaresController::class,'obtenerAtributosGenerales']);
 
 //rutas del familiar del apartado de perfil
-Route::get('Familiares/Perfil/ObtenerPerfil',[familiaresController::class,'ObtenerPerfil']);
+Route::post('Familiares/Perfil/ObtenerPerfil',[familiaresController::class,'ObtenerPerfil']);
 Route::post('Familiares/Perfil/ActualizarInformacionPersonal',[familiaresController::class,'ActualizarInformacionPersonal']);
 Route::post('Familiares/Perfil/ActualizarInformacionCuenta',[familiaresController::class,'ActualizarInformacionCuenta']);
 Route::post('Familiares/Perfil/ActualizarContrasena',[familiaresController::class,'actualizarContrasena']);

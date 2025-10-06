@@ -34,7 +34,8 @@ return Application::configure(basePath: dirname(__DIR__))
            'Familiares/Pacientes/AsignarCuidadorAPaciente',
            'Familiares/Pacientes/DesasignarCuidadorAPaciente',
            'Familiares/Pacientes/EliminarPaciente',
-           'Familiares/Cuidadores/EliminarCuidador'
+           'Familiares/Cuidadores/EliminarCuidador',
+           'Familiares/Perfil/ObtenerPerfil',
            
         ]);
         //
