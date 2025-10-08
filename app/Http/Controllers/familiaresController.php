@@ -675,11 +675,14 @@ $correo=$request->CorreoE;
              return response()->json(['message' => 'No se encontraron cuidadores'], 204);
          }
 
+         
+
          $resultado = [];
 
          foreach ($cuidadores as $cuidador) {
              $infoContacto = informacionContactoCuidador::where('IdCuidador', $cuidador->IdCuidador)->first();
-
+            $pacienteDelCuidador=$cuidador->pacientes()->exists();
+            $paciente=$pacienteDelCuidador?"Asignado":"No Asignado";
              $resultado[] = [
                  'IdCuidador' => $cuidador->IdCuidador,
                  'Nombre' => $cuidador->Nombre,
@@ -690,6 +693,7 @@ $correo=$request->CorreoE;
                  'Direccion' => $infoContacto->Direccion,
                  'Telefono1' => $infoContacto->Telefono1,
                  'Telefono2' => $infoContacto->Telefono2,
+                 'PacienteAsignado'=>$paciente,
              ];
          }
 
