@@ -20,8 +20,8 @@ Route::post('Familiares/Perfil/ActualizarContrasena',[familiaresController::clas
 //rutas de familiar para administrar cuidadores
 Route::post('Familiares/Cuidadores/AgregarCuidador',[familiaresController::class,'agregarCuidador']);
 Route::post('Familiares/Cuidadores/EditarCuidadorInformacionPerfil',[familiaresController::class,'editarCuidadorInformacionPerfil']);
-Route::get('Familiares/Cuidadores/ObtenerCuidadores',[familiaresController::class,'obtenerCuidadores']);
-Route::get('Familiares/Cuidadores/ObtenerCuidador',[familiaresController::class,'obtenerCuidador']);
+Route::post('Familiares/Cuidadores/ObtenerCuidadores',[familiaresController::class,'obtenerCuidadores']);
+Route::post('Familiares/Cuidadores/ObtenerCuidador',[familiaresController::class,'obtenerCuidador']);
 Route::get('Familiares/getInfo',[familiaresController::class,'getInfo']);
 Route::post('Familiares/Cuidadores/EditarCuidadorInformacionCuenta',[familiaresController::class,'editarCuidadorInformacionCuenta']);
 Route::post('Familiares/Cuidadores/CambiarContrasenaCuidador',[familiaresController::class,'cambiarContrasenaCuidador']);
