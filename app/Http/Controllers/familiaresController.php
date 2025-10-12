@@ -944,6 +944,7 @@ $correo=$request->CorreoE;
             'Nombre'=>["Required","string","max:100"],
             'ApellidoP'=>["Required","string","max:100"],
             'ApellidoM'=>["nullable","string","max:100"],
+            'Padecimiento'=>["nullable","string","max:100"],
             'Direccion'=>["nullable","string","max:250"],
             'Telefono1'=>["nullable","numeric","digits:10"],
             'Telefono2'=>["nullable","numeric","digits:10"]
@@ -971,6 +972,7 @@ $correo=$request->CorreoE;
                 'Nombre'=>$request->Nombre,
                 'ApellidoP'=>$request->ApellidoP,
                 'ApellidoM'=>$request->ApellidoM,
+                'Padecimiento'=>$request->Padecimiento,
             ]);
 
             $paciente->save();
@@ -1040,6 +1042,7 @@ $correo=$request->CorreoE;
                 'Nombre' => $paciente->Nombre,
                 'ApellidoP' => $paciente->ApellidoP,
                 'ApellidoM' => $paciente->ApellidoM,
+                'Padecimiento' => $paciente->Padecimiento,
                 'Direccion' => $infoContacto->Direccion,
                 'Telefono1' => $infoContacto->Telefono1,
                 'Telefono2' => $infoContacto->Telefono2,
@@ -1099,6 +1102,7 @@ $correo=$request->CorreoE;
             'Nombre' => $paciente->Nombre,
             'ApellidoP' => $paciente->ApellidoP,
             'ApellidoM' => $paciente->ApellidoM,
+            'Padecimiento' => $paciente->Padecimiento,
             'Direccion' => $informacionContactoPaciente->Direccion,
             'Telefono1' => $informacionContactoPaciente->Telefono1,
             'Telefono2' => $informacionContactoPaciente->Telefono2,
@@ -1120,6 +1124,7 @@ $correo=$request->CorreoE;
             'Nombre'=>["Required","string","max:100"],
             'ApellidoP'=>["nullable","string","max:100"],
             'ApellidoM'=>["nullable","string","max:100"],
+            'Padecimiento'=>["nullable","string","max:100"],
             'Direccion'=>["nullable","string","max:250"],
             'Telefono1'=>["nullable","numeric","digits:10"],
             'Telefono2'=>["nullable","numeric","digits:10"]
@@ -1162,6 +1167,7 @@ $correo=$request->CorreoE;
             $paciente->Nombre=$request->Nombre;
             $paciente->ApellidoP=$request->ApellidoP;
             $paciente->ApellidoM=$request->ApellidoM;
+            $paciente->Padecimiento=$request->Padecimiento;
             $paciente->save();
             $informacionContactoPaciente->Direccion=$request->Direccion;
             $informacionContactoPaciente->Telefono1=$request->Telefono1;

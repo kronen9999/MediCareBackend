@@ -14,6 +14,7 @@ class pacientes extends Model
         'Nombre',
         'ApellidoP',
         'ApellidoM',
+        'Padecimiento',
     ];
 
     public $timestamps = false;
