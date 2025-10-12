@@ -39,6 +39,15 @@ class pacientes extends Model
            get: fn($value) => ucfirst(strtolower($value)),
         );
     }
+    
+    public function Padecimiento():Attribute
+    {
+        return new Attribute(
+           set: fn($value) => ucfirst(strtolower($value)),
+           get: fn($value) => ucfirst(strtolower($value)),
+        );
+    }
+    
 
     public function familiares()
     {
