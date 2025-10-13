@@ -29,8 +29,8 @@ Route::post('Familiares/Cuidadores/EliminarCuidador',[familiaresController::clas
 
 //rutas del familiar para administrar pacientes
 Route::post('Familiares/Pacientes/AgregarPaciente',[familiaresController::class,'agregarPaciente']);
-Route::get('Familiares/Pacientes/ObtenerPacientes',[familiaresController::class,'obtenerPacientes']);
-Route::get('Familiares/Pacientes/ObtenerPaciente',[familiaresController::class,'obtenerPaciente']);
+Route::post('Familiares/Pacientes/ObtenerPacientes',[familiaresController::class,'obtenerPacientes']);
+Route::post('Familiares/Pacientes/ObtenerPaciente',[familiaresController::class,'obtenerPaciente']);
 Route::post('Familiares/Pacientes/EditarPacienteInformacionPerfil',[familiaresController::class,'editarPaciente']);
 Route::post('Familiares/Pacientes/AsignarCuidadorAPaciente',[familiaresController::class,'asignarCuidadorPaciente']);
 Route::post('Familiares/Pacientes/DesasignarCuidadorAPaciente',[familiaresController::class,'desasignarCuidador']);

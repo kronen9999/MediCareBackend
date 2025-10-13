@@ -39,6 +39,8 @@ return Application::configure(basePath: dirname(__DIR__))
            'Familiares/ObtenerAtributosGenerales',
            'Familiares/Cuidadores/ObtenerCuidador',
            'Familiares/Cuidadores/ObtenerCuidadores',
+           'Familiares/Pacientes/ObtenerPacientes',
+           'Familiares/Pacientes/ObtenerPaciente',
            
         ]);
         //
