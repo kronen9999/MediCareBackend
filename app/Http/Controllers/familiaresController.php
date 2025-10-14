@@ -700,6 +700,60 @@ $correo=$request->CorreoE;
          return response()->json(['Cuidadores' => $resultado], 200);
     }
 
+    //Metodo para obtener cuidadores sin asignacion
+
+    public function obtenerCuidadoresNoAsignados(Request $request)
+    {
+   try{
+    $request->validate(["IdFamiliar"=>["Required"],
+    "TokenAcceso"=>["Required"]
+    ]);
+   }
+   catch(\Illuminate\Validation\ValidationException $e)
+   {
+    $firstError = collect($e->errors())->flatten()->first();
+               return response()->json(['error' => $firstError], 422);
+   }
+
+    $familiar = fam::where('IdFamiliar',$request->IdFamiliar)->first();
+         if (!$familiar)
+         {
+             return response()->json(['message' => 'Familiar No encontrado'], 404);
+         }
+         if ($familiar->TokenAcceso != $request->TokenAcceso)
+         {
+             return response()->json(['message' => 'Token de acceso incorrecto'], 401);
+         }
+
+         $cuidadores = cuidadores::where('IdFamiliar', $request->IdFamiliar)->get();
+
+         $resultado=[];
+ 
+         foreach($cuidadores as $cuidador)
+         {
+         if ($cuidador->pacientes()->exists())
+         {
+       continue;
+         }
+
+         $resultado[]=[
+            "IdCuidador"=>$cuidador->IdCuidador,
+            "Nombre"=>$cuidador->Nombre,
+            "ApellidoM"=>$cuidador->ApellidoM,
+            "ApellidoP"=>$cuidador->ApellidoP
+         ];
+   
+
+         }
+
+         if (empty($resultado)) {
+        return response()->json(['message' => 'No se encontraron cuidadores no asignados'], 204);
+         }
+
+    return response()->json(["CuidadoresNoAsignados" => $resultado], 200);
+
+        }
+
     //Metodo para obtener un cuidador en especifico
 
     public function obtenerCuidador (Request $request)
