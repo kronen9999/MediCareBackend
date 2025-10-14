@@ -1036,7 +1036,7 @@ $correo=$request->CorreoE;
         $resultado = [];
         foreach ($pacientes as $paciente) {
             $infoContacto = $paciente->informacionContactoPaciente()->first();
-
+            $cuidador =$paciente->cuidadores()->first();
             $resultado[] = [
                 'IdPaciente' => $paciente->IdPaciente,
                 'Nombre' => $paciente->Nombre,
@@ -1047,6 +1047,9 @@ $correo=$request->CorreoE;
                 'Telefono1' => $infoContacto->Telefono1,
                 'Telefono2' => $infoContacto->Telefono2,
                 'IdCuidador' => $paciente->IdCuidador,
+                'NombreCuidador' => $cuidador ? $cuidador->Nombre : null,
+                'ApellidoPCuidador' => $cuidador ? $cuidador->ApellidoP : null,
+                'ApellidoMCuidador' => $cuidador ? $cuidador->ApellidoM : null,
             ];
         }
 
