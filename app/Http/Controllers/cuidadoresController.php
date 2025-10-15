@@ -186,6 +186,56 @@ $correo=$request->CorreoE;
         
 
     }
+
+    /////////////////Metodos del perfil del cuidador//////////////////////////////////////////////////
+
+    public function ObtenerPerfilCompleto(Request $request)
+    {
+        try{
+            $request->validate([
+                'IdCuidador' => 'required',
+                'TokenAcceso' => 'required',
+            ]);
+        }catch(\Illuminate\Validation\ValidationException $e){
+            $firstError = collect($e->errors())->flatten()->first();
+              return response()->json(['error' => $firstError], 422);
+        }
+        
+        $Usuario=cu::where("IdCuidador",$request->IdCuidador)->first();
+        if (!$Usuario)
+        {
+            return response()->json(['message' => 'Usuario No encontrado'], 404);
+        }
+        if ($Usuario->TokenAcceso != $request->TokenAcceso)
+        {
+            return response()->json(['message' => 'Token de acceso invalido'], 401);
+        }
+
+        $informacionContacto=$Usuario->informacionContactoCuidador()->first();
+        $familiar=$Usuario->familiar()->first();
+        $informacionContactoFamiliar=$familiar->informacionContactoFamiliar()->first();
+        $perfilCompleto=[
+            'IdCuidador'=>$Usuario->IdCuidador,
+            'Nombre'=>$Usuario->Nombre,
+            'ApellidoPaterno'=>$Usuario->ApellidoP,
+            'ApellidoMaterno'=>$Usuario->ApellidoM,
+            'Usuario'=>$Usuario->Usuario,
+            'CorreoE'=>$Usuario->CorreoE,
+            'Telefono1'=>$informacionContacto ? $informacionContacto->Telefono1 : null,
+            'Telefono2'=>$informacionContacto ? $informacionContacto->Telefono2 : null,
+            'Direccion'=>$informacionContacto ? $informacionContacto->Direccion : null,
+            'NombreFamiliar'=>$familiar->Nombre,
+            'ApellidoPFamiliar'=>$familiar->ApellidoP,
+            'ApellidoMFamiliar'=>$familiar->ApellidoM,
+            'CorreoEFamiliar'=>$familiar->CorreoE,
+            'DireccionFamiliar'=>$informacionContactoFamiliar->Direccion,
+            'Telefono1Familiar'=>$informacionContactoFamiliar->Telefono1,
+            'Telefono2Familiar'=>$informacionContactoFamiliar->Telefono2,
+
+        ];
+        return response()->json($perfilCompleto, 200);
     
-    
+}
+
+
 }
