@@ -7,6 +7,7 @@ use App\Jobs\cuidadoresNotificarFamiliarRecuperacion;
 use Illuminate\Http\Request;
 
 use App\Models\cuidadores as cu;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -273,5 +274,59 @@ $correo=$request->CorreoE;
             'Direccion'=>$informacionUsuario ? $informacionUsuario->Direccion : null,
         ], 200);
 
+    }
+
+    public function actualizarInformacionPersonal (Request $request)
+    {
+         try{
+            $request->validate([
+                'IdCuidador' => 'required',
+                'TokenAcceso' => 'required',
+                'Nombre'=>["required","string","max:100"],
+                'ApellidoP'=>["required","string","max:100"],
+                'ApellidoM'=>["nullable","string","max:100"],
+                'Direccion'=>["nullable","string","max:250"],
+                "Telefono1"=>["nullable","numeric","digits:10"],
+                "Telefono2"=>["nullable","numeric","digits:10"],
+            ]);
+        }catch(\Illuminate\Validation\ValidationException $e){
+            $firstError = collect($e->errors())->flatten()->first();
+              return response()->json(['error' => $firstError], 422);
+        }
+
+         $Usuario=cu::where("IdCuidador",$request->IdCuidador)->first();
+
+        if (!$Usuario)
+        {
+            return response()->json(['message' => 'Usuario No encontrado'], 404);
+        }
+        if ($Usuario->TokenAcceso != $request->TokenAcceso)
+        {
+            return response()->json(['message' => 'Token de acceso invalido'], 401);
+        }
+        $informacionUsuario=$Usuario->informacionContactoCuidador()->first();
+        try{
+     DB::beginTransaction();
+
+     $Usuario->Nombre=$request->Nombre;
+    $Usuario->ApellidoP = $request->ApellidoP;
+    $Usuario->ApellidoM = $request->ApellidoM;
+    $Usuario->save();
+
+    if ($informacionUsuario) {
+        $informacionUsuario->Direccion = $request->Direccion;
+        $informacionUsuario->Telefono1 = $request->Telefono1;
+        $informacionUsuario->Telefono2 = $request->Telefono2;
+        $informacionUsuario->save();
+    }
+      DB::commit();
+    return response()->json(['message' => 'Información actualizada correctamente'], 200);
+
+     
+        }catch(Exception $e)
+        {
+        DB::rollBack();
+        return response()->json(["message"=>$e->getMessage()]);
+        }
     }
 }
