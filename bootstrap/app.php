@@ -45,6 +45,7 @@ return Application::configure(basePath: dirname(__DIR__))
            'Cuidadores/Perfil/ObtenerPerfilCompleto',
            'Cuidadores/Perfil/ObtenerPerfilBasico',
            'Cuidadores/Perfil/ActualizarInformacionPersonal',
+           'Cuidadores/Perfil/ActualizarInformacionCuenta',
            
         ]);
         //

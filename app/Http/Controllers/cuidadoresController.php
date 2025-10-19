@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
+use function PHPUnit\Framework\isEmpty;
+
 class cuidadoresController extends Controller
 {
 
@@ -328,5 +330,87 @@ $correo=$request->CorreoE;
         DB::rollBack();
         return response()->json(["message"=>$e->getMessage()]);
         }
+    }
+
+    public function actualizarInformacionCuenta(Request $request)
+    {
+        try{
+            $request->validate([
+                'IdCuidador' => 'required',
+                'TokenAcceso' => 'required',
+                'Usuario'=>["required","string","max:50"],
+                'CorreoE'=>["nullable","string","max:250","email"],
+            ]);
+        }catch(\Illuminate\Validation\ValidationException $e){
+            $firstError = collect($e->errors())->flatten()->first();
+              return response()->json(['error' => $firstError], 422);
+        }
+
+         $Usuario=cu::where("IdCuidador",$request->IdCuidador)->first();
+
+        if (!$Usuario)
+        {
+            return response()->json(['message' => 'Usuario No encontrado'], 404);
+        }
+        if ($Usuario->TokenAcceso != $request->TokenAcceso)
+        {
+            return response()->json(['message' => 'Token de acceso invalido'], 401);
+        }
+
+        try{
+            DB::beginTransaction();
+
+            $correo="";
+            $usuario="";
+
+            if (empty($request->Usuario))
+            {
+                return response()->json(["error"=>"El campo del usuario es obligatorio"],422);
+            }
+            else{
+                if ($request->Usuario!=$Usuario->Usuario)
+                {
+                    if (cu::where("Usuario",$request->Usuario)->exists())
+                        {
+                          return response()->json(["error"=>"Nombre de usuario ocupado"],422);
+                        }
+                }
+                
+            $usuario=$request->Usuario;
+            }
+            
+
+            
+
+            if (empty($request->CorreoE))
+            {
+                $correo=null;
+            }
+            else 
+            {
+                if (strtolower($request->CorreoE) != $Usuario->CorreoE)
+                {
+               if (cu::where("CorreoE",$request->CorreoE)->exists())
+                  {
+                  return response()->json(["error"=>"Correo electronico ocupado"],422);
+                  }  
+                }
+            $correo=$request->CorreoE; 
+            }
+            
+            $Usuario->Usuario=$usuario;
+            $Usuario->CorreoE=$correo;
+
+            $Usuario->save();
+
+            DB::commit();
+
+            return response()->json(["message"=>"Datos actualizados correctamente"],200);
+        }catch(Exception $e)
+        {
+            DB::rollBack();
+            return response()->json(["message"=>$e->getMessage()],500);
+        }
+
     }
 }
