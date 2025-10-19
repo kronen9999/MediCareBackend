@@ -237,5 +237,41 @@ $correo=$request->CorreoE;
     
 }
 
+    public function obtenerPerfilBasico(Request $request)
+    {
+         try{
+            $request->validate([
+                'IdCuidador' => 'required',
+                'TokenAcceso' => 'required',
+            ]);
+        }catch(\Illuminate\Validation\ValidationException $e){
+            $firstError = collect($e->errors())->flatten()->first();
+              return response()->json(['error' => $firstError], 422);
+        }
 
+         $Usuario=cu::where("IdCuidador",$request->IdCuidador)->first();
+
+        if (!$Usuario)
+        {
+            return response()->json(['message' => 'Usuario No encontrado'], 404);
+        }
+        if ($Usuario->TokenAcceso != $request->TokenAcceso)
+        {
+            return response()->json(['message' => 'Token de acceso invalido'], 401);
+        }
+        $informacionUsuario=$Usuario->informacionContactoCuidador()->first();
+
+        return response()->json([
+            'IdCuidador'=>$Usuario->IdCuidador,
+            'Nombre'=>$Usuario->Nombre,
+            'ApellidoPaterno'=>$Usuario->ApellidoP,
+            'ApellidoMaterno'=>$Usuario->ApellidoM,
+            'Usuario'=>$Usuario->Usuario,
+            'CorreoE'=>$Usuario->CorreoE,
+            'Telefono1'=>$informacionUsuario ? $informacionUsuario->Telefono1 : null,
+            'Telefono2'=>$informacionUsuario ? $informacionUsuario->Telefono2 : null,
+            'Direccion'=>$informacionUsuario ? $informacionUsuario->Direccion : null,
+        ], 200);
+
+    }
 }

@@ -10,3 +10,4 @@ Route::post('Cuidadores/RestablecerContrasena', [App\Http\Controllers\cuidadores
 Route::post('Cuidadores/AlertaFamiliar',[cuidadoresController::class,'alertaRecuperacionFamiliar']);
 //Metodos para administrar el perfil del cuidador
 Route::post('Cuidadores/Perfil/ObtenerPerfilCompleto', [cuidadoresController::class, 'ObtenerPerfilCompleto']);
+Route::post('Cuidadores/Perfil/ObtenerPerfilBasico', [cuidadoresController::class, 'obtenerPerfilBasico']);
