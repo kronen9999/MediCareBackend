@@ -13,3 +13,4 @@ Route::post('Cuidadores/Perfil/ObtenerPerfilCompleto', [cuidadoresController::cl
 Route::post('Cuidadores/Perfil/ObtenerPerfilBasico', [cuidadoresController::class, 'obtenerPerfilBasico']);
 Route::post('Cuidadores/Perfil/ActualizarInformacionPersonal',[cuidadoresController::class,'actualizarInformacionPersonal']);
 Route::post('Cuidadores/Perfil/ActualizarInformacionCuenta', [cuidadoresController::class, 'actualizarInformacionCuenta']);
+Route::post('Cuidadores/Perfil/ActualizarContrasena', [cuidadoresController::class, 'actualizarContrasena']);
