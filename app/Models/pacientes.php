@@ -10,6 +10,13 @@ class pacientes extends Model
    protected $table = 'pacientes';
     protected $primaryKey = 'IdPaciente';
 
+    public $fillable = [
+        'Nombre',
+        'ApellidoP',
+        'ApellidoM',
+        'Padecimiento',
+    ];
+
     public $timestamps = false;
 
     public function Nombre():Attribute
@@ -33,6 +40,15 @@ class pacientes extends Model
            get: fn($value) => ucfirst(strtolower($value)),
         );
     }
+    
+    public function Padecimiento():Attribute
+    {
+        return new Attribute(
+           set: fn($value) => ucfirst(strtolower($value)),
+           get: fn($value) => ucfirst(strtolower($value)),
+        );
+    }
+    
 
     public function familiares()
     {
@@ -46,6 +62,10 @@ class pacientes extends Model
     public function medicamentos()
     {
         return $this->hasMany(medicamentos::class, 'IdPaciente', 'IdPaciente');
+    }
+    public function informacionContactoPaciente()
+    {
+        return $this->hasOne(informacioncontactopacientes::class, 'IdPaciente', 'IdPaciente');
     }
 
     

@@ -9,6 +9,15 @@ class informacionContactoFamiliar extends Model
     protected $table = 'informacioncontactofamiliar';
    
     public $timestamps = false; 
+    protected $primaryKey = null;
+    public $incrementing = false;
+
+    protected $fillable = [
+        'IdFamiliar',
+        'Direccion',
+        'Telefono1',
+        'Telefono2',
+    ];
 
     
 

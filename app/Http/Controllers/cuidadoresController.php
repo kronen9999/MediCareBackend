@@ -7,9 +7,12 @@ use App\Jobs\cuidadoresNotificarFamiliarRecuperacion;
 use Illuminate\Http\Request;
 
 use App\Models\cuidadores as cu;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+
+use function PHPUnit\Framework\isEmpty;
 
 class cuidadoresController extends Controller
 {
@@ -186,6 +189,274 @@ $correo=$request->CorreoE;
         
 
     }
+
+    /////////////////Metodos del perfil del cuidador//////////////////////////////////////////////////
+
+    public function ObtenerPerfilCompleto(Request $request)
+    {
+        try{
+            $request->validate([
+                'IdCuidador' => 'required',
+                'TokenAcceso' => 'required',
+            ]);
+        }catch(\Illuminate\Validation\ValidationException $e){
+            $firstError = collect($e->errors())->flatten()->first();
+              return response()->json(['error' => $firstError], 422);
+        }
+        
+        $Usuario=cu::where("IdCuidador",$request->IdCuidador)->first();
+        if (!$Usuario)
+        {
+            return response()->json(['message' => 'Usuario No encontrado'], 404);
+        }
+        if ($Usuario->TokenAcceso != $request->TokenAcceso)
+        {
+            return response()->json(['message' => 'Token de acceso invalido'], 401);
+        }
+
+        $informacionContacto=$Usuario->informacionContactoCuidador()->first();
+        $familiar=$Usuario->familiar()->first();
+        $informacionContactoFamiliar=$familiar->informacionContactoFamiliar()->first();
+        $perfilCompleto=[
+            'IdCuidador'=>$Usuario->IdCuidador,
+            'Nombre'=>$Usuario->Nombre,
+            'ApellidoPaterno'=>$Usuario->ApellidoP,
+            'ApellidoMaterno'=>$Usuario->ApellidoM,
+            'Usuario'=>$Usuario->Usuario,
+            'CorreoE'=>$Usuario->CorreoE,
+            'Telefono1'=>$informacionContacto ? $informacionContacto->Telefono1 : null,
+            'Telefono2'=>$informacionContacto ? $informacionContacto->Telefono2 : null,
+            'Direccion'=>$informacionContacto ? $informacionContacto->Direccion : null,
+            'NombreFamiliar'=>$familiar->Nombre,
+            'ApellidoPFamiliar'=>$familiar->ApellidoP,
+            'ApellidoMFamiliar'=>$familiar->ApellidoM,
+            'CorreoEFamiliar'=>$familiar->CorreoE,
+            'DireccionFamiliar'=>$informacionContactoFamiliar->Direccion,
+            'Telefono1Familiar'=>$informacionContactoFamiliar->Telefono1,
+            'Telefono2Familiar'=>$informacionContactoFamiliar->Telefono2,
+
+        ];
+        return response()->json($perfilCompleto, 200);
     
-    
+}
+
+    public function obtenerPerfilBasico(Request $request)
+    {
+         try{
+            $request->validate([
+                'IdCuidador' => 'required',
+                'TokenAcceso' => 'required',
+            ]);
+        }catch(\Illuminate\Validation\ValidationException $e){
+            $firstError = collect($e->errors())->flatten()->first();
+              return response()->json(['error' => $firstError], 422);
+        }
+
+         $Usuario=cu::where("IdCuidador",$request->IdCuidador)->first();
+
+        if (!$Usuario)
+        {
+            return response()->json(['message' => 'Usuario No encontrado'], 404);
+        }
+        if ($Usuario->TokenAcceso != $request->TokenAcceso)
+        {
+            return response()->json(['message' => 'Token de acceso invalido'], 401);
+        }
+        $informacionUsuario=$Usuario->informacionContactoCuidador()->first();
+
+        return response()->json([
+            'IdCuidador'=>$Usuario->IdCuidador,
+            'Nombre'=>$Usuario->Nombre,
+            'ApellidoPaterno'=>$Usuario->ApellidoP,
+            'ApellidoMaterno'=>$Usuario->ApellidoM,
+            'Usuario'=>$Usuario->Usuario,
+            'CorreoE'=>$Usuario->CorreoE,
+            'Telefono1'=>$informacionUsuario ? $informacionUsuario->Telefono1 : null,
+            'Telefono2'=>$informacionUsuario ? $informacionUsuario->Telefono2 : null,
+            'Direccion'=>$informacionUsuario ? $informacionUsuario->Direccion : null,
+        ], 200);
+
+    }
+
+    public function actualizarInformacionPersonal (Request $request)
+    {
+         try{
+            $request->validate([
+                'IdCuidador' => 'required',
+                'TokenAcceso' => 'required',
+                'Nombre'=>["required","string","max:100"],
+                'ApellidoP'=>["required","string","max:100"],
+                'ApellidoM'=>["nullable","string","max:100"],
+                'Direccion'=>["nullable","string","max:250"],
+                "Telefono1"=>["nullable","numeric","digits:10"],
+                "Telefono2"=>["nullable","numeric","digits:10"],
+            ]);
+        }catch(\Illuminate\Validation\ValidationException $e){
+            $firstError = collect($e->errors())->flatten()->first();
+              return response()->json(['error' => $firstError], 422);
+        }
+
+         $Usuario=cu::where("IdCuidador",$request->IdCuidador)->first();
+
+        if (!$Usuario)
+        {
+            return response()->json(['message' => 'Usuario No encontrado'], 404);
+        }
+        if ($Usuario->TokenAcceso != $request->TokenAcceso)
+        {
+            return response()->json(['message' => 'Token de acceso invalido'], 401);
+        }
+        $informacionUsuario=$Usuario->informacionContactoCuidador()->first();
+        try{
+     DB::beginTransaction();
+
+     $Usuario->Nombre=$request->Nombre;
+    $Usuario->ApellidoP = $request->ApellidoP;
+    $Usuario->ApellidoM = $request->ApellidoM;
+    $Usuario->save();
+
+    if ($informacionUsuario) {
+        $informacionUsuario->Direccion = $request->Direccion;
+        $informacionUsuario->Telefono1 = $request->Telefono1;
+        $informacionUsuario->Telefono2 = $request->Telefono2;
+        $informacionUsuario->save();
+    }
+      DB::commit();
+    return response()->json(['message' => 'Información actualizada correctamente'], 200);
+
+     
+        }catch(Exception $e)
+        {
+        DB::rollBack();
+        return response()->json(["message"=>$e->getMessage()]);
+        }
+    }
+
+    public function actualizarInformacionCuenta(Request $request)
+    {
+        try{
+            $request->validate([
+                'IdCuidador' => 'required',
+                'TokenAcceso' => 'required',
+                'Usuario'=>["required","string","max:50"],
+                'CorreoE'=>["nullable","string","max:250","email"],
+            ]);
+        }catch(\Illuminate\Validation\ValidationException $e){
+            $firstError = collect($e->errors())->flatten()->first();
+              return response()->json(['error' => $firstError], 422);
+        }
+
+         $Usuario=cu::where("IdCuidador",$request->IdCuidador)->first();
+
+        if (!$Usuario)
+        {
+            return response()->json(['message' => 'Usuario No encontrado'], 404);
+        }
+        if ($Usuario->TokenAcceso != $request->TokenAcceso)
+        {
+            return response()->json(['message' => 'Token de acceso invalido'], 401);
+        }
+
+        try{
+            DB::beginTransaction();
+
+            $correo="";
+            $usuario="";
+
+            if (empty($request->Usuario))
+            {
+                return response()->json(["error"=>"El campo del usuario es obligatorio"],422);
+            }
+            else{
+                if ($request->Usuario!=$Usuario->Usuario)
+                {
+                    if (cu::where("Usuario",$request->Usuario)->exists())
+                        {
+                          return response()->json(["error"=>"Nombre de usuario ocupado"],422);
+                        }
+                }
+                
+            $usuario=$request->Usuario;
+            }
+            
+
+            
+
+            if (empty($request->CorreoE))
+            {
+                $correo=null;
+            }
+            else 
+            {
+                if (strtolower($request->CorreoE) != $Usuario->CorreoE)
+                {
+               if (cu::where("CorreoE",$request->CorreoE)->exists())
+                  {
+                  return response()->json(["error"=>"Correo electronico ocupado"],422);
+                  }  
+                }
+            $correo=$request->CorreoE; 
+            }
+            
+            $Usuario->Usuario=$usuario;
+            $Usuario->CorreoE=$correo;
+
+            $Usuario->save();
+
+            DB::commit();
+
+            return response()->json(["message"=>"Datos actualizados correctamente"],200);
+        }catch(Exception $e)
+        {
+            DB::rollBack();
+            return response()->json(["message"=>$e->getMessage()],500);
+        }
+
+    }
+
+    public function actualizarContrasena (Request $request)
+    {
+        
+        try{
+          $request->validate([
+            "IdCuidador"=>'required',
+            "TokenAcceso"=>'required',
+            "ContrasenaActual"=>["required","min:8","max:20"],
+            "NuevaContrasena"=>["required","min:8","max:20"],
+          ]);
+        }catch(\Illuminate\Validation\ValidationException $e){
+           $firstError = collect($e->errors())->flatten()->first();
+              return response()->json(['error' => $firstError], 422);
+        }
+
+         $Usuario=cu::where("IdCuidador",$request->IdCuidador)->first();
+
+        if (!$Usuario)
+        {
+            return response()->json(['message' => 'Usuario No encontrado'], 404);
+        }
+        if ($Usuario->TokenAcceso != $request->TokenAcceso)
+        {
+            return response()->json(['message' => 'Token de acceso invalido'], 401);
+        }
+         if (!Hash::check($request->ContrasenaActual, $Usuario->Contrasena))
+        {
+            return response()->json(['message' => 'Contraseña actual incorrecta'], 401);
+        }
+
+         try{
+            DB::beginTransaction();
+
+            $Usuario->Contrasena = $request->NuevaContrasena;
+            $Usuario->save();
+            DB::commit();
+
+            return response()->json(['message'=>'Contraseña actualizada'],200);
+
+        }catch(Exception $e){
+            DB::rollBack();
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+
+    }
 }

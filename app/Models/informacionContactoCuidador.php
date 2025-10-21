@@ -9,6 +9,10 @@ class informacionContactoCuidador extends Model
 {
    protected $table="informacioncontactocuidador";
 
+    protected $primaryKey=null;
+
+    public $incrementing=false;
+
    protected $fillable = [
        'IdCuidador',
        'Direccion',
