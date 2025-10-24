@@ -36,3 +36,5 @@ Route::post('Familiares/Pacientes/EditarPacienteInformacionPerfil',[familiaresCo
 Route::post('Familiares/Pacientes/AsignarCuidadorAPaciente',[familiaresController::class,'asignarCuidadorPaciente']);
 Route::post('Familiares/Pacientes/DesasignarCuidadorAPaciente',[familiaresController::class,'desasignarCuidador']);
 Route::post('Familiares/Pacientes/EliminarPaciente',[familiaresController::class,'eliminarPaciente']);
+//Rutas para administrar los medicamentos de los famliares
+Route::post('Familiares/Pacientes/Medicamentos/AgregarMedicamento',[familiaresController::class,'agregarMedicamento']);
