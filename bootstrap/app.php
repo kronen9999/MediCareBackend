@@ -47,7 +47,8 @@ return Application::configure(basePath: dirname(__DIR__))
            'Cuidadores/Perfil/ActualizarInformacionPersonal',
            'Cuidadores/Perfil/ActualizarInformacionCuenta',
            'Cuidadores/Perfil/ActualizarContrasena',
-           'Familiares/Pacientes/Medicamentos/AgregarMedicamento'
+           'Familiares/Pacientes/Medicamentos/AgregarMedicamento',
+           'Familiares/Pacientes/Medicamentos/ObtenerMedicamentos',
            
         ]);
         //
