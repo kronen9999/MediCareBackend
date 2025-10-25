@@ -40,3 +40,4 @@ Route::post('Familiares/Pacientes/EliminarPaciente',[familiaresController::class
 Route::post('Familiares/Pacientes/Medicamentos/ObtenerMedicamentos',[familiaresController::class,'obtenerMedicamentos']);
 Route::post('Familiares/Pacientes/Medicamentos/ObtenerMedicamento',[familiaresController::class,'obtenerMedicamento']);
 Route::post('Familiares/Pacientes/Medicamentos/AgregarMedicamento',[familiaresController::class,'agregarMedicamento']);
+Route::put('Familiares/Pacientes/Medicamentos/EditarMedicamento',[familiaresController::class,'editarMedicamento']);

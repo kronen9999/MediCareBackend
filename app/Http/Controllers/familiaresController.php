@@ -1532,7 +1532,7 @@ try{
 
        public function  obtenerMedicamento(Request $request)
        {
-try{
+            try{
             $request->validate([
                 'IdFamiliar'=>['Required'],
                 'TokenAcceso'=>['Required'],
@@ -1570,5 +1570,65 @@ try{
             }
 
             return response()->json($medicamento);
+       }
+
+       public function editarMedicamento(Request $request)
+       {
+ try{
+            $request->validate([
+                'IdFamiliar'=>['Required'],
+                'TokenAcceso'=>['Required'],
+                'IdPaciente'=>['Required'],
+                'IdMedicamento'=>['Required'],
+                'NombreM'=>['Required','max:100'],
+                'DescripcionM'=>['nullable','max:250'],
+                'TipoMedicamento'=>['nullable','max:100'],
+            ]);
+          }catch(\Illuminate\Validation\ValidationException $e)
+          {
+            $firstError = collect($e->errors())->flatten()->first();
+            return response()->json(['error' => $firstError], 422);
+          }
+          $familiar=fam::where('IdFamiliar',$request->IdFamiliar)->first();
+            if (!$familiar)
+            {
+                return response()->json(['message' => 'Familiar No encontrado'], 404);
+            }
+            if ($familiar->TokenAcceso != $request->TokenAcceso)
+            {
+                return response()->json(['message' => 'Token de acceso incorrecto'], 401);
+            }
+
+            $paciente=$familiar->pacientes()->where('IdPaciente',$request->IdPaciente)->first();
+            if (!$paciente)
+            {
+                return response()->json(['message' => 'Paciente No encontrado'], 404);
+            }
+            if ($paciente->IdFamiliar != $request->IdFamiliar)
+            {
+                return response()->json(['message' => 'El paciente no pertenece a este familiar'], 403);
+            }
+            $medicamento=$paciente->medicamentos()->where("IdMedicamento",$request->IdMedicamento)->first();
+            if (!$medicamento)
+            {
+                return response()->json(["message"=>"Medicamento no encontrado"],404);
+            }
+            try{
+                DB::beginTransaction();
+
+                $medicamento->NombreM=$request->NombreM;
+                $medicamento->DescripcionM=$request->DescripcionM;
+                $medicamento->TipoMedicamento=$request->TipoMedicamento;
+                $medicamento->save();
+
+                DB::commit();
+
+                return response()->json(['message'=>'Medicamento actualizado'],200);
+
+            }catch(Exception $e){
+                DB::rollBack();
+                return response()->json(['message' => $e->getMessage()], 500);
+            }
+
        }
 }

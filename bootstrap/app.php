@@ -50,6 +50,7 @@ return Application::configure(basePath: dirname(__DIR__))
            'Familiares/Pacientes/Medicamentos/AgregarMedicamento',
            'Familiares/Pacientes/Medicamentos/ObtenerMedicamentos',
            'Familiares/Pacientes/Medicamentos/ObtenerMedicamento',
+           'Familiares/Pacientes/Medicamentos/EditarMedicamento',
            
         ]);
         //
