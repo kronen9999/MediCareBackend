@@ -13,6 +13,14 @@ class horariosMedicamentos extends Model
 
     public $timestamps = false;
 
+    public $fillable = [
+        'HoraPrimeraDosis',
+        'IntervaloHoras',
+        'Dosis',
+        'UnidaDosis',
+        'Notas'
+    ];
+
     public function Notas():Attribute{
         return Attribute::make(
            set: fn($value) => ucfirst(strtolower($value)),

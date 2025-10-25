@@ -1424,7 +1424,7 @@ $correo=$request->CorreoE;
 
     ///////////////////////////////////Metodos para los medicamentos del paciente////////////////////
 
-    public function agregarMedicamento(Request $request)
+    public function agregarMedicamentoHorario(Request $request)
     {
 try{
         $request->validate([
@@ -1433,7 +1433,12 @@ try{
             'IdPaciente'=>['Required'],
             'NombreM'=>['Required','max:100'],
             'DescripcionM'=>['nullable','max:250'],
-            'TipoMedicamento'=>['nullable','max:100'],
+            'TipoMedicamento'=>['Required','max:100'],
+            'HoraPrimeraDosis'=>['Required','date_format:Y-m-d H:i:s'],
+            'IntervaloHoras'=>['Required','integer','min:1'],
+            'Dosis'=>['Required','integer','min:1'],
+            'UnidadDosis'=>['Required','max:50'],
+            'Notas'=>['nullable','max:250'],
         ]);
       }catch(\Illuminate\Validation\ValidationException $e)
       {
@@ -1465,9 +1470,18 @@ try{
             'NombreM'=>$request->NombreM,
             'DescripcionM'=>$request->DescripcionM,
             'TipoMedicamento'=>$request->TipoMedicamento,
-            'MedicamentoActivo'=>1,
+            'MedicamentoActivo'=>0,
         ]);
         $medicamento->save();   
+
+        $horarioMedicamento=$medicamento->horariosMedicamentos()->create([
+            'HoraPrimeraDosis'=>$request->HoraPrimeraDosis,
+            'IntervaloHoras'=>$request->IntervaloHoras,
+            'Dosis'=>$request->Dosis,
+            'UnidaDosis'=>$request->UnidadDosis,
+            'Notas'=>$request->Notas,
+        ]);
+        $horarioMedicamento->save();
         DB::commit();
         return response()->json(['message'=>'Medicamento agregado'],201);
         }catch(Exception $e){

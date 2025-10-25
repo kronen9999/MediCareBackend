@@ -39,5 +39,5 @@ Route::post('Familiares/Pacientes/EliminarPaciente',[familiaresController::class
 //Rutas para administrar los medicamentos de los famliares
 Route::post('Familiares/Pacientes/Medicamentos/ObtenerMedicamentos',[familiaresController::class,'obtenerMedicamentos']);
 Route::post('Familiares/Pacientes/Medicamentos/ObtenerMedicamento',[familiaresController::class,'obtenerMedicamento']);
-Route::post('Familiares/Pacientes/Medicamentos/AgregarMedicamento',[familiaresController::class,'agregarMedicamento']);
+Route::post('Familiares/Pacientes/Medicamentos/AgregarMedicamentoHorario',[familiaresController::class,'agregarMedicamentoHorario']);
 Route::put('Familiares/Pacientes/Medicamentos/EditarMedicamento',[familiaresController::class,'editarMedicamento']);
