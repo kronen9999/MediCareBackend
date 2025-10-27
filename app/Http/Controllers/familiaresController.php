@@ -1583,7 +1583,24 @@ try{
                 return response()->json(["message"=>"Medicamento no encontrado"],404);
             }
 
-            return response()->json($medicamento);
+            $informacionHorarioMedicamento=$medicamento->horariosMedicamentos()->first();
+            if (!$informacionHorarioMedicamento)
+            {
+                return response()->json(["message"=>"Horario de medicamento no encontrado"],404);
+            }
+
+
+            return response()->json([
+                'IdMedicamento'=>$medicamento->IdMedicamento,
+                'NombreM'=>$medicamento->NombreM,
+                'DescripcionM'=>$medicamento->DescripcionM,
+                'TipoMedicamento'=>$medicamento->TipoMedicamento,
+                'HoraPrimeraDosis'=>$informacionHorarioMedicamento->HoraPrimeraDosis,
+                'IntervaloHoras'=>$informacionHorarioMedicamento->IntervaloHoras,
+                'Dosis'=>$informacionHorarioMedicamento->Dosis,
+                'UnidadDosis'=>$informacionHorarioMedicamento->UnidaDosis,
+                'Notas'=>$informacionHorarioMedicamento->Notas,
+            ],200);
        }
 
        public function editarMedicamento(Request $request)
@@ -1645,4 +1662,69 @@ try{
             }
 
        }
+
+    public function editarHorarioMedicamento(Request $request)
+    {
+        try{
+            $request->validate([
+                'IdFamiliar'=>['Required'],
+                'TokenAcceso'=>['Required'],
+                'IdPaciente'=>['Required'],
+                'IdMedicamento'=>['Required'],
+                'HoraPrimeraDosis'=>['Required','date_format:Y-m-d H:i:s'],
+                'IntervaloHoras'=>['Required','integer','min:1'],
+                'Dosis'=>['Required','integer','min:1'],
+                'UnidadDosis'=>['Required','max:50'],
+                'Notas'=>['nullable','max:250'],
+            ]);
+          }catch(\Illuminate\Validation\ValidationException $e)
+          {
+            $firstError = collect($e->errors())->flatten()->first();
+            return response()->json(['error' => $firstError], 422);
+          }
+          $familiar=fam::where('IdFamiliar',$request->IdFamiliar)->first();
+            if (!$familiar)
+            {
+                return response()->json(['message' => 'Familiar No encontrado'], 404);
+            }
+            if ($familiar->TokenAcceso != $request->TokenAcceso)
+            {
+                return response()->json(['message' => 'Token de acceso incorrecto'], 401);
+            }
+
+            $paciente=$familiar->pacientes()->where('IdPaciente',$request->IdPaciente)->first();
+            if (!$paciente)
+            {
+                return response()->json(['message' => 'Paciente No encontrado'], 404);
+            }
+            if ($paciente->IdFamiliar != $request->IdFamiliar)
+            {
+                return response()->json(['message' => 'El paciente no pertenece a este familiar'], 403);
+            }
+            $medicamento=$paciente->medicamentos()->where("IdMedicamento",$request->IdMedicamento)->first();
+            if (!$medicamento)
+            {
+                return response()->json(["message"=>"Medicamento no encontrado"],404);
+            }
+            $horarioMedicamento=$medicamento->horariosMedicamentos()->first();
+            if (!$horarioMedicamento)
+            {
+                return response()->json(["message"=>"Horario de medicamento no encontrado"],404);
+            }
+            try{
+                DB::beginTransaction();
+                
+                   $horarioMedicamento->HoraPrimeraDosis=$request->HoraPrimeraDosis;
+                     $horarioMedicamento->IntervaloHoras=$request->IntervaloHoras;
+                        $horarioMedicamento->Dosis=$request->Dosis;
+                            $horarioMedicamento->UnidaDosis=$request->UnidadDosis;
+                                $horarioMedicamento->Notas=$request->Notas;
+                $horarioMedicamento->save();
+                 DB::commit();
+                return response()->json(['message'=>'Horario de medicamento actualizado'],200);
+            }catch(Exception $e){
+                DB::rollBack();
+                return response()->json(['message' => $e->getMessage()], 500);
+            }
+    }
 }

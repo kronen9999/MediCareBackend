@@ -41,3 +41,4 @@ Route::post('Familiares/Pacientes/Medicamentos/ObtenerMedicamentos',[familiaresC
 Route::post('Familiares/Pacientes/Medicamentos/ObtenerMedicamento',[familiaresController::class,'obtenerMedicamento']);
 Route::post('Familiares/Pacientes/Medicamentos/AgregarMedicamentoHorario',[familiaresController::class,'agregarMedicamentoHorario']);
 Route::put('Familiares/Pacientes/Medicamentos/EditarMedicamento',[familiaresController::class,'editarMedicamento']);
+Route::put('Familiares/Pacientes/Medicamentos/EditarHorarioMedicamento',[familiaresController::class,'editarHorarioMedicamento']);
