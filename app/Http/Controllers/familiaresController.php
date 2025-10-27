@@ -1536,6 +1536,7 @@ try{
                     'NombreM'=>$medicamento->NombreM,
                     'DescripcionM'=>$medicamento->DescripcionM,
                     'TipoMedicamento'=>$medicamento->TipoMedicamento,
+                    'MedicamentoActivo'=>$medicamento->MedicamentoActivo,
                 ];
             }
 
