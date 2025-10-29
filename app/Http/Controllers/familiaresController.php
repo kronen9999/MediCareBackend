@@ -1646,8 +1646,8 @@ try{
                 'NombreM'=>$medicamento->NombreM,
                 'DescripcionM'=>$medicamento->DescripcionM,
                 'TipoMedicamento'=>$medicamento->TipoMedicamento,
-                'HoraPrimeraDosis'=>$informacionHorarioMedicamento->HoraPrimeraDosis,
                 'IntervaloHoras'=>$informacionHorarioMedicamento->IntervaloHoras,
+                'IntervaloMinutos'=>$informacionHorarioMedicamento->IntervaloMinutos,
                 'Dosis'=>$informacionHorarioMedicamento->Dosis,
                 'UnidadDosis'=>$informacionHorarioMedicamento->UnidaDosis,
                 'Notas'=>$informacionHorarioMedicamento->Notas,
@@ -1665,6 +1665,11 @@ try{
                 'NombreM'=>['Required','max:100'],
                 'DescripcionM'=>['nullable','max:250'],
                 'TipoMedicamento'=>['nullable','max:100'],
+                'IntervaloHoras'=>['Required','integer','min:0','max:12'],
+                'IntervaloMinutos'=>['Required','integer','min:5','max:60'],
+                'Dosis'=>['Required','integer','min:1'],
+                'UnidadDosis'=>['Required','max:50'],
+                'Notas'=>['nullable','max:250'],
             ]);
           }catch(\Illuminate\Validation\ValidationException $e)
           {
