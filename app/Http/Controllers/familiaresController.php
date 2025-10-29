@@ -1437,7 +1437,7 @@ try{
             'TipoMedicamento'=>['Required','max:100'],
             'HoraPrimeraDosis'=>['Required','date_format:Y-m-d H:i:s'],
             'IntervaloHoras'=>['Required','integer','min:0','max:12'],
-            'IntervaloMinutos'=>['Required','integer','min:5','max:60'],
+            'IntervaloMinutos'=>['Required','integer','min:0','max:60'],
             'PrimerRecordatorio'=>["Required"],
             'Dosis'=>['Required','integer','min:1'],
             'UnidadDosis'=>['Required','max:50'],
@@ -1665,9 +1665,6 @@ try{
                 'NombreM'=>['Required','max:100'],
                 'DescripcionM'=>['nullable','max:250'],
                 'TipoMedicamento'=>['nullable','max:100'],
-                'IntervaloHoras'=>['Required','integer','min:0','max:12'],
-                'IntervaloMinutos'=>['Required','integer','min:5','max:60'],
-                'Dosis'=>['Required','integer','min:1'],
                 'UnidadDosis'=>['Required','max:50'],
                 'Notas'=>['nullable','max:250'],
             ]);
@@ -1700,6 +1697,7 @@ try{
             {
                 return response()->json(["message"=>"Medicamento no encontrado"],404);
             }
+            $horarioMedicamento=$medicamento->horariosMedicamentos()->first();
             try{
                 DB::beginTransaction();
 
@@ -1707,10 +1705,13 @@ try{
                 $medicamento->DescripcionM=$request->DescripcionM;
                 $medicamento->TipoMedicamento=$request->TipoMedicamento;
                 $medicamento->save();
+                $horarioMedicamento->UnidaDosis=$request->UnidadDosis;
+                $horarioMedicamento->Notas=$request->Notas;
+                $horarioMedicamento->save();
 
                 DB::commit();
 
-                return response()->json(['message'=>'Medicamento actualizado'],200);
+                return response()->json(['message'=>'Informacion del medicamento actualizada'],200);
 
             }catch(Exception $e){
                 DB::rollBack();
@@ -1727,11 +1728,9 @@ try{
                 'TokenAcceso'=>['Required'],
                 'IdPaciente'=>['Required'],
                 'IdMedicamento'=>['Required'],
-                'HoraPrimeraDosis'=>['Required','date_format:Y-m-d H:i:s'],
-                'IntervaloHoras'=>['Required','integer','min:1'],
+                'IntervaloHoras'=>['Required','integer','min:0','max:12'],
+                'IntervaloMinutos'=>['Required','integer','min:0','max:60'],
                 'Dosis'=>['Required','integer','min:1'],
-                'UnidadDosis'=>['Required','max:50'],
-                'Notas'=>['nullable','max:250'],
             ]);
           }catch(\Illuminate\Validation\ValidationException $e)
           {
@@ -1770,17 +1769,17 @@ try{
             try{
                 DB::beginTransaction();
                 
-                   $horarioMedicamento->HoraPrimeraDosis=$request->HoraPrimeraDosis;
+                     
                      $horarioMedicamento->IntervaloHoras=$request->IntervaloHoras;
-                        $horarioMedicamento->Dosis=$request->Dosis;
-                            $horarioMedicamento->UnidaDosis=$request->UnidadDosis;
-                                $horarioMedicamento->Notas=$request->Notas;
+                     $horarioMedicamento->IntervaloMinutos=$request->IntervaloMinutos;
+                     $horarioMedicamento->Dosis=$request->Dosis;
                 $horarioMedicamento->save();
                  DB::commit();
-                return response()->json(['message'=>'Horario de medicamento actualizado'],200);
+                return response()->json(['message'=>'Informacion del horario del medicamento actualizada'],200);
             }catch(Exception $e){
                 DB::rollBack();
                 return response()->json(['message' => $e->getMessage()], 500);
             }
     }
+    
 }
