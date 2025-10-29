@@ -16,6 +16,7 @@ class horariosMedicamentos extends Model
     public $fillable = [
         'HoraPrimeraDosis',
         'IntervaloHoras',
+        'IntervaloMinutos',
         'Dosis',
         'UnidaDosis',
         'Notas'

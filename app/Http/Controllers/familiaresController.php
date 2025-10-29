@@ -11,6 +11,7 @@ use App\Models\informacionContactoCuidador;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Mail\familiaresEnvioCodigoMail as fmEnvioC;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -1435,7 +1436,9 @@ try{
             'DescripcionM'=>['nullable','max:250'],
             'TipoMedicamento'=>['Required','max:100'],
             'HoraPrimeraDosis'=>['Required','date_format:Y-m-d H:i:s'],
-            'IntervaloHoras'=>['Required','integer','min:1'],
+            'IntervaloHoras'=>['Required','integer','min:0','max:12'],
+            'IntervaloMinutos'=>['Required','integer','min:5','max:60'],
+            'PrimerRecordatorio'=>["Required"],
             'Dosis'=>['Required','integer','min:1'],
             'UnidadDosis'=>['Required','max:50'],
             'Notas'=>['nullable','max:250'],
@@ -1470,20 +1473,67 @@ try{
             'NombreM'=>$request->NombreM,
             'DescripcionM'=>$request->DescripcionM,
             'TipoMedicamento'=>$request->TipoMedicamento,
-            'MedicamentoActivo'=>0,
+            'MedicamentoActivo'=>1,
         ]);
         $medicamento->save();   
 
         $horarioMedicamento=$medicamento->horariosMedicamentos()->create([
             'HoraPrimeraDosis'=>$request->HoraPrimeraDosis,
             'IntervaloHoras'=>$request->IntervaloHoras,
+            'IntervaloMinutos'=>$request->IntervaloMinutos,
             'Dosis'=>$request->Dosis,
             'UnidaDosis'=>$request->UnidadDosis,
             'Notas'=>$request->Notas,
         ]);
         $horarioMedicamento->save();
-        DB::commit();
-        return response()->json(['message'=>'Medicamento agregado'],201);
+
+        if ($request->PrimerRecordatorio=="false")
+        {
+            $fechaInicio=$request->HoraPrimeraDosis;
+            $intervaloHoras=$request->IntervaloHoras;
+            $intervaloMinutos=$request->IntervaloMinutos;
+
+            $fecha= Carbon::createFromFormat('Y-m-d H:i:s',$fechaInicio);
+
+            $fechaSiguiente = $fecha->copy()->addHours($intervaloHoras)->addMinutes($intervaloMinutos);
+
+            $siguienteDosis = $fechaSiguiente->format('Y-m-d H:i:s');
+
+            $historialMedicamento=$horarioMedicamento->historialAdministracion()->create([
+                'FechaProgramada'=>$siguienteDosis,
+                'HoraAdministracion'=>null,
+                'Estado'=>'No Administrado',
+                'Administro'=>null,
+                'IdFamiliar'=>$request->IdFamiliar,
+                'IdCuidador'=>$paciente->IdCuidador,
+            ]);
+            
+            $historialMedicamento->save();
+            DB::commit();
+            return response()->json(["message"=>"Medicamento agregado exitosamente y  se ha agregado el primer recordatorio del medicamento",
+        "FechaProgramada"=>$siguienteDosis],200);
+        }
+        else {
+             $historialMedicamento=$horarioMedicamento->historialAdministracion()->create([
+                'FechaProgramada'=>$request->HoraPrimeraDosis,
+                'HoraAdministracion'=>null,
+                'Estado'=>'No Administrado',
+                'Administro'=>null,
+                'IdFamiliar'=>$request->IdFamiliar,
+                'IdCuidador'=>$paciente->IdCuidador,
+            ]);
+            
+            $historialMedicamento->save();
+            DB::commit();
+            return response()->json(["message"=>"Medicamento agregado exitosamente y  se ha agregado el primer recordatorio del medicamento",
+        "FechaProgramada"=>$request->HoraPrimeraDosis],200);
+    
+        }
+        
+        
+
+        
+        
         }catch(Exception $e){
             DB::rollBack();
             return response()->json(['message' => $e->getMessage()], 500);
