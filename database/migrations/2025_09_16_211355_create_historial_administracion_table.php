@@ -16,7 +16,7 @@ return new class extends Migration
             $table->dateTime("FechaProgramada");
             $table->dateTime("HoraAdministracion")->nullable();
             $table->enum("Estado", ['Administrado','No Administrado'])->default('No Administrado');
-            $table->bigInteger("IdCuidador");
+            $table->bigInteger("IdCuidador")->nullable();
             $table->foreign('IdCuidador')->references('IdCuidador')->on('cuidadores')->onDelete('cascade');
             $table->bigInteger("IdHorario");
             $table->foreign('IdHorario')->references('IdHorario')->on('horariosmedicamentos')->onDelete('cascade');

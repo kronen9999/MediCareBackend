@@ -1487,11 +1487,11 @@ try{
         ]);
         $horarioMedicamento->save();
 
-        if ($request->PrimerRecordatorio=="false")
+        if ($request->PrimerRecordatorio=="SinRecordatorio")
         {
             $fechaInicio=$request->HoraPrimeraDosis;
-            $intervaloHoras=$request->IntervaloHoras;
-            $intervaloMinutos=$request->IntervaloMinutos;
+            $intervaloHoras=(int)$request->IntervaloHoras;
+            $intervaloMinutos=(int)$request->IntervaloMinutos;
 
             $fecha= Carbon::createFromFormat('Y-m-d H:i:s',$fechaInicio);
 
@@ -1513,7 +1513,7 @@ try{
             return response()->json(["message"=>"Medicamento agregado exitosamente y  se ha agregado el primer recordatorio del medicamento",
         "FechaProgramada"=>$siguienteDosis],200);
         }
-        else {
+        else if ($request->PrimerRecordatorio=="ConRecordatorio") {
              $historialMedicamento=$horarioMedicamento->historialAdministracion()->create([
                 'FechaProgramada'=>$request->HoraPrimeraDosis,
                 'HoraAdministracion'=>null,
@@ -1528,12 +1528,11 @@ try{
             return response()->json(["message"=>"Medicamento agregado exitosamente y  se ha agregado el primer recordatorio del medicamento",
         "FechaProgramada"=>$request->HoraPrimeraDosis],200);
     
+        }        
+        {
+            DB::rollBack();
+            return response()->json(['message' => 'Opción de primer recordatorio no válida'], 400);
         }
-        
-        
-
-        
-        
         }catch(Exception $e){
             DB::rollBack();
             return response()->json(['message' => $e->getMessage()], 500);
