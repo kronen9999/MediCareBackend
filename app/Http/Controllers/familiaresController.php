@@ -1506,6 +1506,11 @@ try{
                 'Administro'=>null,
                 'IdFamiliar'=>$request->IdFamiliar,
                 'IdCuidador'=>$paciente->IdCuidador,
+                'NombreM'=>$medicamento->NombreM,
+                'NombreP'=>$paciente->Nombre,
+                'Dosis'=>$horarioMedicamento->Dosis,
+                'UnidadDosis'=>$horarioMedicamento->UnidaDosis,
+                'Notas'=>$horarioMedicamento->Notas,
             ]);
             
             $historialMedicamento->save();
@@ -1521,6 +1526,11 @@ try{
                 'Administro'=>null,
                 'IdFamiliar'=>$request->IdFamiliar,
                 'IdCuidador'=>$paciente->IdCuidador,
+                'NombreM'=>$medicamento->NombreM,
+                'NombreP'=>$paciente->Nombre,
+                'Dosis'=>$horarioMedicamento->Dosis,
+                'UnidadDosis'=>$horarioMedicamento->UnidaDosis,
+                'Notas'=>$horarioMedicamento->Notas,
             ]);
             
             $historialMedicamento->save();
