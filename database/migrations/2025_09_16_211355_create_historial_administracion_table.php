@@ -15,10 +15,15 @@ return new class extends Migration
             $table->bigInteger('idHistorial')->autoIncrement()->primary();
             $table->dateTime("FechaProgramada");
             $table->dateTime("HoraAdministracion")->nullable();
-            $table->enum("Estado", ['Administrado','No Administrado'])->default('No Administrado');
+            $table->string("NombreM")->nullable(false);
+            $table->string("NombreP")->nullable(false);
+            $table->string("Dosis")->nullable(false);
+            $table->string("UnidadDosis")->nullable(false);
+            $table->string("Notas")->nullable();
+            $table->enum("Estado", ['Administrado','No Administrado','Cancelado'])->default('No Administrado');
             $table->bigInteger("IdCuidador")->nullable();
             $table->foreign('IdCuidador')->references('IdCuidador')->on('cuidadores')->onDelete('cascade');
-            $table->bigInteger("IdHorario");
+            $table->bigInteger("IdHorario")->nullable();
             $table->foreign('IdHorario')->references('IdHorario')->on('horariosmedicamentos')->onDelete('cascade');
         });
     }
