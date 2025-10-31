@@ -1790,5 +1790,57 @@ try{
                 return response()->json(['message' => $e->getMessage()], 500);
             }
     }
+
+    /////////////////////////////////////////Metodos de historial de administracion de medicamentos//////////////////////////////////////////////////////
+
+    public function obtenerProximosRecordatorios(Request $request)
+    {
+    try{
+        $request->validate([
+            'IdFamiliar'=>['Required'],
+            'TokenAcceso'=>['Required'],
+        ]);
+    }catch(\Illuminate\Validation\ValidationException $e)
+    {
+    $firstError = collect($e->errors())->flatten()->first();
+    return response()->json(['error' => $firstError], 422);
+    }
+    $familiar=fam::where('IdFamiliar',$request->IdFamiliar)->first();
+            if (!$familiar)
+            {
+                return response()->json(['message' => 'Familiar No encontrado'], 404);
+            }
+            if ($familiar->TokenAcceso != $request->TokenAcceso)
+            {
+                return response()->json(['message' => 'Token de acceso incorrecto'], 401);
+            }
+            $recordatorios=$familiar->historial()->where('Estado','=',"No Administrado")->get();
+
+            $recordatoriosProximos=[];
+
+            foreach($recordatorios as $recordatorio)
+            {
+                $Cuidador=$familiar->cuidadores()->where('IdCuidador',$recordatorio->IdCuidador)->first();
+                $recordatoriosProximos[]=[
+                    "IdHistorial"=>$recordatorio->idHistorial,
+                    "FechaProgramada"=>$recordatorio->FechaProgramada,
+                    "NombreM"=>$recordatorio->NombreM,
+                    "NombreP"=>$recordatorio->NombreP,
+                    "Dosis"=>$recordatorio->Dosis,
+                    "UnidadDosis"=>$recordatorio->UnidadDosis,
+                    "Notas"=>$recordatorio->Notas,
+                    "NombreCuidador"=>$Cuidador?$Cuidador->Nombre:null
+                ];
+            }
+
+            if ($recordatoriosProximos==[])
+            {
+                return response()->json(['message'=>'No hay recordatorios pendientes'],204);
+            }
+            else {
+                return response()->json(['Recordatorios'=>$recordatoriosProximos],200);
+            }
+
+}
     
 }
