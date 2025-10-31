@@ -16,6 +16,11 @@ class historialAdministracion extends Model
         'HoraAdministracion',
         'Estado',
         'Administro',
+        'NombreM',
+        'NombreP',
+        'Dosis',
+        'UnidadDosis',
+        'Notas',
         'IdFamiliar',
         'IdCuidador',
     ];
