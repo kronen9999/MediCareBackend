@@ -1844,7 +1844,7 @@ try{
 
 }
 
-//Metodo para administrar un medicamento
+
 public function administrarMedicamento(Request $request)
 {
      try{
@@ -1874,10 +1874,7 @@ public function administrarMedicamento(Request $request)
       return response()->json(["message"=>"Registro no encontrado"],404);
     }
     
-  $historialMedicamento->Administro="Familiar";
-         $historialMedicamento->Estado="Administrado";
-         $historialMedicamento->HoraAdministracion=$request->FechaAdministracion;
-         $historialMedicamento->save();
+
       
     try{
         DB::beginTransaction();
@@ -1946,5 +1943,91 @@ public function administrarMedicamento(Request $request)
     
     
 }
+
+public function cancelarAdministracionMedicamento(Request $request){
+    try{
+        $request->validate([
+            'IdFamiliar'=>['Required'],
+            'TokenAcceso'=>['Required'],
+            'IdHistorial'=>['Required'],
+            'FechaCancelacion'=>['Required','date_format:Y-m-d H:i:s']
+        ]);
+    }catch(\Illuminate\Validation\ValidationException $e)
+    {
+    $firstError = collect($e->errors())->flatten()->first();
+    return response()->json(['error' => $firstError], 422);
+    }
+     $familiar=fam::where('IdFamiliar',$request->IdFamiliar)->first();
+            if (!$familiar)
+            {
+                return response()->json(['message' => 'Familiar No encontrado'], 404);
+            }
+            if ($familiar->TokenAcceso != $request->TokenAcceso)
+            {
+                return response()->json(['message' => 'Token de acceso incorrecto'], 401);
+            }
+    $historialMedicamento=$familiar->historial()->where("idHistorial","=",$request->IdHistorial)->first();
+    if (!$historialMedicamento)
+    {
+      return response()->json(["message"=>"Registro no encontrado"],404);
+    }
+       
+    try{
+        DB::beginTransaction();
+     $medicamentoHorario=$historialMedicamento->horario()->first();  
+     $medicamento=$medicamentoHorario->medicamento()->first();
+     $paciente=$medicamento->paciente()->first();
+
+     $fecha= Carbon::createFromFormat('Y-m-d H:i:s',$request->FechaCancelacion);
+     
+     
+     
+    if ($medicamento->MedicamentoActivo==1)
+    {  
+        
+         $historialMedicamento->Estado="Cancelado";
+         $historialMedicamento->save();
+         
+
+            $fechaSiguiente = $fecha->copy()->addHours((int)$medicamentoHorario->IntervaloHoras)->addMinutes((int)$medicamentoHorario->IntervaloMinutos);
+
+            $siguienteDosis = $fechaSiguiente->format('Y-m-d H:i:s');
+
+           $nuevoRegistro= $medicamentoHorario->historialAdministracion()->create([
+                'FechaProgramada'=>$siguienteDosis,
+                'HoraAdministracion'=>null,
+                'Estado'=>'No Administrado',
+                'Administro'=>null,
+                'IdFamiliar'=>$request->IdFamiliar,
+                'IdCuidador'=>$paciente->IdCuidador,
+                'NombreM'=>$medicamento->NombreM,
+                'NombreP'=>$paciente->Nombre,
+                'Dosis'=>$medicamentoHorario->Dosis,
+                'UnidadDosis'=>$medicamentoHorario->UnidaDosis,
+                'Notas'=>$medicamentoHorario->Notas,
+            ]);
+            DB::commit();
+
+            return response()->json(["message"=>"Administracion del medicamento cancelada,se ha generado el siguiente recordatorio de la dosis",
+        "FechaSiguienteDosis"=>$nuevoRegistro->FechaProgramada],200);
+    }
+    else {
+         $historialMedicamento->Estado="Cancelado";
+         $historialMedicamento->save();
+         DB::commit();
+      return response()->json([
+        "message" => "Administracion del medicamento cancelada, debido a que el medicamento no está activo no se generará la siguiente dosis",
+        "FechaSiguienteDosis"=>null
+    ], 200);
+    }
+
+    
+    }catch(Exception $e){
+     DB::rollBack();
+     return response()->json(["message"=>$e->getMessage()],500);
+    }
+    
+}
+
     
 }

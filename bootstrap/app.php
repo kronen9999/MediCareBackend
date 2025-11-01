@@ -54,6 +54,7 @@ return Application::configure(basePath: dirname(__DIR__))
            'Familiares/Pacientes/Medicamentos/EditarHorarioMedicamento',
            'HistorialAdministracion/ObtenerProximosRecordatorios',
            'HistorialAdministracion/administrarMedicamentos',
+           'HistorialAdministracion/CancelarAdministracionMedicamento',
         ]);
         //
     })
