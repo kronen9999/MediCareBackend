@@ -56,6 +56,8 @@ return Application::configure(basePath: dirname(__DIR__))
            'HistorialAdministracion/administrarMedicamentos',
            'HistorialAdministracion/CancelarAdministracionMedicamento',
            'HistorialAdministracion/ObtenerHistorialAdministracion',
+           'Familiares/Pacientes/Medicamentos/HabilitarMedicamento',
+           'Familiares/Pacientes/Medicamentos/DesabilitarMedicamento',
         ]);
         //
     })
