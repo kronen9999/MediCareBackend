@@ -1814,7 +1814,7 @@ try{
             {
                 return response()->json(['message' => 'Token de acceso incorrecto'], 401);
             }
-            $recordatorios=$familiar->historial()->where('Estado','=',"No Administrado")->get();
+            $recordatorios=$familiar->historial()->where('Estado','=',"No Administrado")->orderBy("FechaProgramada")->get();
 
             $recordatoriosProximos=[];
 
