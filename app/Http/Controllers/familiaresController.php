@@ -2029,5 +2029,62 @@ public function cancelarAdministracionMedicamento(Request $request){
     
 }
 
+public function obtenerhistorialAdministracion(Request $request)
+{
+try{
+        $request->validate([
+            'IdFamiliar'=>['Required'],
+            'TokenAcceso'=>['Required'],
+        ]);
+    }catch(\Illuminate\Validation\ValidationException $e)
+    {
+    $firstError = collect($e->errors())->flatten()->first();
+    return response()->json(['error' => $firstError], 422);
+    }
+    $familiar=fam::where('IdFamiliar',$request->IdFamiliar)->first();
+            if (!$familiar)
+            {
+                return response()->json(['message' => 'Familiar No encontrado'], 404);
+            }
+            if ($familiar->TokenAcceso != $request->TokenAcceso)
+            {
+                return response()->json(['message' => 'Token de acceso incorrecto'], 401);
+            }
+            $recordatorios=$familiar->historial()->where("Estado","!=","No Administrado")->orderBy("FechaProgramada","desc")->get();
+            $recordatoriosConteo=$familiar->historial()->get();
+            $recordatoriosCancelados=$recordatoriosConteo->where("Estado","=","Cancelado")->count();
+            $recordatoriosNoAdministrados=$recordatoriosConteo->where("Estado","=","No Administrado")->count();
+            $recordatoriosAdministrados=$recordatoriosConteo->where("Estado","=","Administrado")->count();
+            $recordatoriosProximos=[];
+
+            foreach($recordatorios as $recordatorio)
+            {
+                $Cuidador=$familiar->cuidadores()->where('IdCuidador',$recordatorio->IdCuidador)->first();
+                $recordatoriosProximos[]=[
+                    "IdHistorial"=>$recordatorio->idHistorial,
+                    "FechaProgramada"=>$recordatorio->FechaProgramada,
+                    "HoraAdministracion"=>$recordatorio->HoraAdministracion,
+                    "NombreM"=>$recordatorio->NombreM,
+                    "NombreP"=>$recordatorio->NombreP,
+                    "Dosis"=>$recordatorio->Dosis,
+                    "UnidadDosis"=>$recordatorio->UnidadDosis,
+                    "Notas"=>$recordatorio->Notas,
+                    "Administro"=>$recordatorio->Administro,
+                    "Estado"=>$recordatorio->Estado,
+                    "NombreCuidador"=>$Cuidador?$Cuidador->Nombre:null
+                ];
+            }
+
+            if ($recordatoriosProximos==[])
+            {
+                return response()->json(['message'=>'Aun no tiene registros en el historial de medicacion'],204);
+            }
+            else {
+                return response()->json(['Recordatorios'=>$recordatoriosProximos,
+            "RecordatoriosCancelados"=>$recordatoriosCancelados,
+            "RecordatoriosNoAdministrados"=>$recordatoriosNoAdministrados,
+            "RecordatoriosAdministrados"=>$recordatoriosAdministrados],200);
+            }
+}
     
 }
