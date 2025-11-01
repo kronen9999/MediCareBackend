@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class historialAdministracion extends Model
 {
     protected $table = 'historialadministracion';
-    protected $primaryKey = 'idhistorial';
+    protected $primaryKey = 'idHistorial';
     public $timestamps = false;
    
     public $fillable = [

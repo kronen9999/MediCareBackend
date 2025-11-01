@@ -44,4 +44,5 @@ Route::put('Familiares/Pacientes/Medicamentos/EditarMedicamento',[familiaresCont
 Route::put('Familiares/Pacientes/Medicamentos/EditarHorarioMedicamento',[familiaresController::class,'editarHorarioMedicamento']);
 //Rutas para el historial de administracion de medicamentos
 Route::post('HistorialAdministracion/ObtenerProximosRecordatorios',[familiaresController::class,'obtenerProximosRecordatorios']);
+Route::post('HistorialAdministracion/administrarMedicamentos',[familiaresController::class,'administrarMedicamento']);
 
