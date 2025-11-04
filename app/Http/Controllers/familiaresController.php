@@ -1838,11 +1838,10 @@ try{
             $medicamento->save();
 
                $fechaRecordatorioDate=Carbon::createFromFormat("Y-m-d H:i:s",$request->HoraCalculo);
-               $siguienteDosis=$fechaRecordatorioDate->copy()->addHours((int)$horarioMedicamento->IntervaloHoras)->addMinutes((int)$horarioMedicamento->IntervaloMinutos);
-               $fechaDosis=$siguienteDosis->format("Y-m-d H:i:s");
+          
 
                  $nuevoRegistro= $horarioMedicamento->historialAdministracion()->create([
-                'FechaProgramada'=>$fechaDosis,
+                'FechaProgramada'=>$fechaRecordatorioDate,
                 'HoraAdministracion'=>null,
                 'Estado'=>'No Administrado',
                 'Administro'=>null,
@@ -1857,7 +1856,7 @@ try{
                
              DB::commit();
 
-            return response()->json(['message'=>'Medicamento habilitado ,el siguiente recordatorio se ha registrado correctamente',"FechaSiguienteDosis"=>$fechaDosis],200);
+            return response()->json(['message'=>'Medicamento habilitado ,el siguiente recordatorio se ha registrado correctamente',"FechaSiguienteDosis"=>$fechaRecordatorioDate],200);
             }catch(Exception $e)
             {
                 DB::rollBack();
