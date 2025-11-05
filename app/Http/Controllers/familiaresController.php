@@ -2202,16 +2202,13 @@ try{
                 ];
             }
 
-            if ($recordatoriosProximos==[])
-            {
-                return response()->json(['message'=>'Aun no tiene registros en el historial de medicacion'],204);
-            }
-            else {
+            
+            
                 return response()->json(['Recordatorios'=>$recordatoriosProximos,
             "RecordatoriosCancelados"=>$recordatoriosCancelados,
             "RecordatoriosNoAdministrados"=>$recordatoriosNoAdministrados,
             "RecordatoriosAdministrados"=>$recordatoriosAdministrados],200);
-            }
+            
 }
     
 }
