@@ -2161,6 +2161,7 @@ try{
         $request->validate([
             'IdFamiliar'=>['Required'],
             'TokenAcceso'=>['Required'],
+            'FechaDatos'=>['Required','date_format:Y-m-d']
         ]);
     }catch(\Illuminate\Validation\ValidationException $e)
     {
@@ -2176,7 +2177,7 @@ try{
             {
                 return response()->json(['message' => 'Token de acceso incorrecto'], 401);
             }
-            $recordatorios=$familiar->historial()->where("Estado","!=","No Administrado")->orderBy("FechaProgramada","desc")->get();
+            $recordatorios=$familiar->historial()->where("Estado","!=","No Administrado")->whereDate("FechaProgramada","=",$request->FechaDatos)->orderBy("FechaProgramada","asc")->get();
             $recordatoriosConteo=$familiar->historial()->get();
             $recordatoriosCancelados=$recordatoriosConteo->where("Estado","=","Cancelado")->count();
             $recordatoriosNoAdministrados=$recordatoriosConteo->where("Estado","=","No Administrado")->count();
