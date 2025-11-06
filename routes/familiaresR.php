@@ -49,5 +49,6 @@ Route::post('HistorialAdministracion/ObtenerProximosRecordatorios',[familiaresCo
 Route::post('HistorialAdministracion/administrarMedicamentos',[familiaresController::class,'administrarMedicamento']);
 Route::post('HistorialAdministracion/CancelarAdministracionMedicamento',[familiaresController::class,'cancelarAdministracionMedicamento']);
 Route::post('HistorialAdministracion/ObtenerHistorialAdministracion',[familiaresController::class,'obtenerhistorialAdministracion']);
+Route::post('HistorialAdministracion/ObtenerMetricasAdministracion',[familiaresController::class,'obtenerMetricasAdministracion']);
 
 

@@ -2179,9 +2179,6 @@ try{
             }
             $recordatorios=$familiar->historial()->where("Estado","!=","No Administrado")->whereDate("FechaProgramada","=",$request->FechaDatos)->orderBy("FechaProgramada","asc")->get();
             $recordatoriosConteo=$familiar->historial()->get();
-            $recordatoriosCancelados=$recordatoriosConteo->where("Estado","=","Cancelado")->count();
-            $recordatoriosNoAdministrados=$recordatoriosConteo->where("Estado","=","No Administrado")->count();
-            $recordatoriosAdministrados=$recordatoriosConteo->where("Estado","=","Administrado")->count();
             $recordatoriosProximos=[];
 
             foreach($recordatorios as $recordatorio)
@@ -2204,11 +2201,40 @@ try{
 
             
             
-                return response()->json(['Recordatorios'=>$recordatoriosProximos,
-            "RecordatoriosCancelados"=>$recordatoriosCancelados,
-            "RecordatoriosNoAdministrados"=>$recordatoriosNoAdministrados,
-            "RecordatoriosAdministrados"=>$recordatoriosAdministrados],200);
+                return response()->json(['Recordatorios'=>$recordatoriosProximos],200);
             
 }
     
+public function obtenerMetricasAdministracion(Request $request)
+{
+    try{
+        $request->validate([
+            'IdFamiliar'=>['Required'],
+            'TokenAcceso'=>['Required'],
+        ]);
+    }catch(\Illuminate\Validation\ValidationException $e)
+    {
+    $firstError = collect($e->errors())->flatten()->first();
+    return response()->json(['error' => $firstError], 422);
+    }
+    $familiar=fam::where('IdFamiliar',$request->IdFamiliar)->first();
+            if (!$familiar)
+            {
+                return response()->json(['message' => 'Familiar No encontrado'], 404);
+            }
+            if ($familiar->TokenAcceso != $request->TokenAcceso)
+            {
+                return response()->json(['message' => 'Token de acceso incorrecto'], 401);
+            }
+
+    $recordatorios=$familiar->historial()->get();
+
+    $recordatoriosCancelados=$recordatorios->where("Estado","=","Cancelado")->count();
+    $recordatoriosAdministrados=$recordatorios->where("Estado","=","Administrado")->count();
+
+    return response()->json([
+        "RecordatoriosCancelados"=>$recordatoriosCancelados,
+        "RecordatoriosAdministrados"=>$recordatoriosAdministrados
+    ],200);
+}
 }
