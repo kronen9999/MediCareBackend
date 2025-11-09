@@ -555,7 +555,11 @@ $correo=$request->CorreoE;
             $cuidador->Nombre=$request->Nombre;
             $cuidador->ApellidoP=$request->ApellidoP;
             $cuidador->ApellidoM=$request->ApellidoM;
-            $cuidador->CorreoE=$request->CorreoE;
+            if ($request->has('CorreoE')) {
+                $cuidador->CorreoE = $request->CorreoE;
+            } else {
+                $cuidador->CorreoE = null;
+            }
             $cuidador->Usuario=$request->Usuario;
             $cuidador->Contrasena=$request->Contrasena;
             $cuidador->TokenAcceso=Str::random(50);
