@@ -1417,12 +1417,29 @@ $correo=$request->CorreoE;
         try{
             DB::beginTransaction();
 
+           $medicamentosPaciente=$paciente->medicamentos()->get();
+           foreach($medicamentosPaciente as $medicamento)
+           {
+            $horarioMedicamento=$medicamento->horariosMedicamentos()->first();
+            $historiales=$horarioMedicamento->historialAdministracion()->get();
+            foreach($historiales as $historial)
+            {
+               $historial->IdHorario=null;
+               $historial->save();
+            }
+           }
+           $cuidador=$paciente->cuidadores()->first();
+           if ($cuidador)
+           {
+            $paciente->IdCuidador=null;
+            $paciente->save();
+           }
            $paciente->delete();
 
             DB::commit();
 
             return response()->json(['message'=>'Paciente eliminado'],200);
-        }catch(\Exception $e){
+        }catch(Exception $e){
             DB::rollBack();
             return response()->json(['message' => $e->getMessage()], 500);
         }
