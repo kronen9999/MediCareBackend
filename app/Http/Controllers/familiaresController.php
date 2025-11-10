@@ -2084,6 +2084,20 @@ public function administrarMedicamento(Request $request)
       
     try{
         DB::beginTransaction();
+
+   if ($historialMedicamento->IdHorario==null)
+     {
+       $historialMedicamento->Administro="Familiar";
+         $historialMedicamento->Estado="Administrado";
+         $historialMedicamento->HoraAdministracion=$request->FechaAdministracion;
+         $historialMedicamento->save();
+         DB::commit();
+      return response()->json([
+        "message" => "Administracion registrada,debido a que el medicamento se ha eliminado no se generara el siguiente registro",
+        "FechaSiguienteDosis"=>null
+    ], 200);
+     } 
+
      $medicamentoHorario=$historialMedicamento->horario()->first();  
      $medicamento=$medicamentoHorario->medicamento()->first();
      $paciente=$medicamento->paciente()->first();
@@ -2096,7 +2110,9 @@ public function administrarMedicamento(Request $request)
         return response()->json(["error"=>"No se puede dar el medicamento antes de la fecha y hora indicadas"],422);
      }
      
+    
      
+
     if ($medicamento->MedicamentoActivo==1)
     {  
         
@@ -2180,6 +2196,20 @@ public function cancelarAdministracionMedicamento(Request $request){
        
     try{
         DB::beginTransaction();
+
+        if ($historialMedicamento->IdHorario==null)
+     {
+       $historialMedicamento->Administro="Familiar";
+         $historialMedicamento->Estado="Cancelado";
+         $historialMedicamento->HoraAdministracion=$request->FechaAdministracion;
+         $historialMedicamento->save();
+         DB::commit();
+      return response()->json([
+        "message" => "Administracion Cancelada,debido a que el medicamento se ha eliminado no se generara el siguiente registro",
+        "FechaSiguienteDosis"=>null
+    ], 200);
+     } 
+     
      $medicamentoHorario=$historialMedicamento->horario()->first();  
      $medicamento=$medicamentoHorario->medicamento()->first();
      $paciente=$medicamento->paciente()->first();
