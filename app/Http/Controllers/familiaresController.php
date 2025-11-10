@@ -1922,6 +1922,65 @@ try{
             }
             
             }
+
+            public function eliminarMedicamento(Request $request){
+                try{
+        $request->validate([
+            'IdFamiliar'=>['Required'],
+            'TokenAcceso'=>['Required'],
+            'IdPaciente'=>['Required'],
+            'IdMedicamento'=>['Required'],
+        ]);
+    }catch(\Illuminate\Validation\ValidationException $e)
+    {
+    $firstError = collect($e->errors())->flatten()->first();
+    return response()->json(['error' => $firstError], 422);
+    }
+    $familiar=fam::where('IdFamiliar',$request->IdFamiliar)->first();
+            if (!$familiar)
+            {
+                return response()->json(['message' => 'Familiar No encontrado'], 404);
+            }
+            if ($familiar->TokenAcceso != $request->TokenAcceso)
+            {
+                return response()->json(['message' => 'Token de acceso incorrecto'], 401);
+            }
+
+            $paciente=$familiar->pacientes()->where('IdPaciente',$request->IdPaciente)->first();
+            if (!$paciente)
+            {
+                return response()->json(['message' => 'Paciente No encontrado'], 404);
+            }
+            if ($paciente->IdFamiliar != $request->IdFamiliar)
+            {
+                return response()->json(['message' => 'El paciente no pertenece a este familiar'], 403);
+            }
+            $medicamento=$paciente->medicamentos()->where("IdMedicamento",$request->IdMedicamento)->first();
+            if (!$medicamento)
+            {
+                return response()->json(["message"=>"Medicamento no encontrado"],404);
+            }
+            try{
+                DB::beginTransaction();
+
+                $horarioMedicamento=$medicamento->horariosMedicamentos()->first();
+
+                $registrosHistorial=$horarioMedicamento->historialAdministracion()->get();
+
+               foreach($registrosHistorial as $registro)
+               {
+                $registro->IdHorario=null;
+                $registro->save();
+               }
+               $medicamento->delete();
+                DB::commit();
+                return response()->json(['message'=>'Medicamento eliminado'],200);
+            }catch(Exception $e)
+            {
+             DB::rollBack();
+             return response()->json(["message"=>$e->getMessage()]);
+            }
+            }
     /////////////////////////////////////////Metodos de historial de administracion de medicamentos//////////////////////////////////////////////////////
 
     public function obtenerProximosRecordatorios(Request $request)
