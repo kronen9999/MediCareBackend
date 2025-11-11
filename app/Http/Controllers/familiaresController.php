@@ -1538,7 +1538,7 @@ try{
             $historialMedicamento->save();
             DB::commit();
             return response()->json(["message"=>"Medicamento agregado exitosamente y  se ha agregado el primer recordatorio del medicamento",
-        "FechaProgramada"=>$siguienteDosis],200);
+        "FechaProgramada"=>$siguienteDosis,"historialMedicamento"=>$historialMedicamento->idHistorial],200);
         }
         else if ($request->PrimerRecordatorio=="ConRecordatorio") {
              $historialMedicamento=$horarioMedicamento->historialAdministracion()->create([
@@ -1558,7 +1558,7 @@ try{
             $historialMedicamento->save();
             DB::commit();
             return response()->json(["message"=>"Medicamento agregado exitosamente y  se ha agregado el primer recordatorio del medicamento",
-        "FechaProgramada"=>$request->HoraPrimeraDosis],200);
+        "FechaProgramada"=>$request->HoraPrimeraDosis,"historialMedicamento"=>$historialMedicamento->idHistorial],200);
     
         }        
         {
