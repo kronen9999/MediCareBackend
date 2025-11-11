@@ -2094,7 +2094,7 @@ public function administrarMedicamento(Request $request)
          DB::commit();
       return response()->json([
         "message" => "Administracion registrada,debido a que el medicamento se ha eliminado no se generara el siguiente registro",
-        "FechaSiguienteDosis"=>null
+        "FechaSiguienteDosis"=>null,"NombreM"=>null,"NombreP"=>null
     ], 200);
      } 
 
@@ -2142,7 +2142,7 @@ public function administrarMedicamento(Request $request)
             DB::commit();
 
             return response()->json(["message"=>"Administracion registrada,se ha generado el siguiente recordatorio de la dosis",
-        "FechaSiguienteDosis"=>$nuevoRegistro->FechaProgramada],200);
+        "FechaSiguienteDosis"=>$nuevoRegistro->FechaProgramada,"NombreM"=>$nuevoRegistro->NombreM,"NombreP"=>$nuevoRegistro->NombreP],200);
     }
     else {
         
@@ -2153,7 +2153,7 @@ public function administrarMedicamento(Request $request)
          DB::commit();
       return response()->json([
         "message" => "Administracion registrada, debido a que el medicamento no está activo no se generará la siguiente dosis",
-        "FechaSiguienteDosis"=>null
+"FechaSiguienteDosis"=>null,"NombreM"=>null,"NombreP"=>null
     ], 200);
     }
 
