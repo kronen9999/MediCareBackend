@@ -1877,7 +1877,7 @@ try{
                
              DB::commit();
 
-            return response()->json(['message'=>'Medicamento habilitado ,el siguiente recordatorio se ha registrado correctamente',"FechaSiguienteDosis"=>$fechaRecordatorioDate],200);
+            return response()->json(['message'=>'Medicamento habilitado ,el siguiente recordatorio se ha registrado correctamente',"FechaSiguienteDosis"=>$fechaRecordatorioDate,"historialMedicamento"=>$nuevoRegistro->idHistorial],200);
             }catch(Exception $e)
             {
                 DB::rollBack();
