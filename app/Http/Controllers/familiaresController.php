@@ -2206,7 +2206,7 @@ public function cancelarAdministracionMedicamento(Request $request){
          DB::commit();
       return response()->json([
         "message" => "Administracion Cancelada,debido a que el medicamento se ha eliminado no se generara el siguiente registro",
-        "FechaSiguienteDosis"=>null
+        "FechaSiguienteDosis"=>null,"NombreM"=>null,"NombreP"=>null
     ], 200);
      } 
      
@@ -2245,7 +2245,7 @@ public function cancelarAdministracionMedicamento(Request $request){
             DB::commit();
 
             return response()->json(["message"=>"Administracion del medicamento cancelada,se ha generado el siguiente recordatorio de la dosis",
-        "FechaSiguienteDosis"=>$nuevoRegistro->FechaProgramada],200);
+        "FechaSiguienteDosis"=>$nuevoRegistro->FechaProgramada,"NombreM"=>$nuevoRegistro->NombreM,"NombreP"=>$nuevoRegistro->NombreP],200);
     }
     else {
          $historialMedicamento->Estado="Cancelado";
@@ -2253,7 +2253,7 @@ public function cancelarAdministracionMedicamento(Request $request){
          DB::commit();
       return response()->json([
         "message" => "Administracion del medicamento cancelada, debido a que el medicamento no está activo no se generará la siguiente dosis",
-        "FechaSiguienteDosis"=>null
+        "FechaSiguienteDosis"=>null,"NombreM"=>null,"NombreP"=>null
     ], 200);
     }
 
