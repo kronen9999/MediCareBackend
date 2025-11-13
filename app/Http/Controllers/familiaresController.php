@@ -1318,6 +1318,18 @@ $correo=$request->CorreoE;
            $paciente->IdCuidador=$request->IdCuidador;
            $paciente->save();
 
+           $medicamentosPaciente=$paciente->medicamentos()->get();
+              foreach($medicamentosPaciente as $medicamento)
+              {
+                $horarioMedicamento=$medicamento->horariosMedicamentos()->first();
+                $historiales=$horarioMedicamento->historialAdministracion()->get();
+                foreach($historiales as $historial)
+                {
+                   $historial->IdCuidador=$request->IdCuidador;
+                   $historial->save();
+                }
+              }
+
             DB::commit();
 
             return response()->json(['message'=>'Cuidador asignado al paciente'],201);
@@ -1375,6 +1387,18 @@ $correo=$request->CorreoE;
 
            $paciente->IdCuidador=null;
            $paciente->save();
+
+           $medicamentosPaciente=$paciente->medicamentos()->get();
+              foreach($medicamentosPaciente as $medicamento)
+              {
+                $horarioMedicamento=$medicamento->horariosMedicamentos()->first();
+                $historiales=$horarioMedicamento->historialAdministracion()->get();
+                foreach($historiales as $historial)
+                {
+                   $historial->IdCuidador=$request->IdCuidador;
+                   $historial->save();
+                }
+              }
 
             DB::commit();
 
