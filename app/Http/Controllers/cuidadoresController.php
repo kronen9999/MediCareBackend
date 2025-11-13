@@ -653,4 +653,40 @@ $correo=$request->CorreoE;
             return response()->json(['message' => $e->getMessage()], 500);
         }
     }
+
+    public function obtenerMetricasRecordatorios(Request $request)
+    {
+      try{
+          $request->validate([
+            "IdCuidador"=>'required',
+            "TokenAcceso"=>'required',
+          ]);
+        }catch(\Illuminate\Validation\ValidationException $e){
+           $firstError = collect($e->errors())->flatten()->first();
+              return response()->json(['error' => $firstError], 422);
+        }
+           $Usuario=cu::where("IdCuidador",$request->IdCuidador)->first();
+
+        if (!$Usuario)
+        {
+            return response()->json(['message' => 'Usuario No encontrado'], 404);
+        }
+        if ($Usuario->TokenAcceso != $request->TokenAcceso)
+        {
+            return response()->json(['message' => 'Token de acceso invalido'], 401);
+        }
+
+
+        
+    $recordatorios=$Usuario->historialAdministracion()->get();
+
+    $recordatoriosCancelados=$recordatorios->where("Estado","=","Cancelado")->count();
+    $recordatoriosAdministrados=$recordatorios->where("Estado","=","Administrado")->count();
+
+    return response()->json([
+        "RecordatoriosCancelados"=>$recordatoriosCancelados,
+        "RecordatoriosAdministrados"=>$recordatoriosAdministrados
+    ],200);
+  
+    }
 }
