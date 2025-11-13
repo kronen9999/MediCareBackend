@@ -977,7 +977,13 @@ $correo=$request->CorreoE;
                     $paciente->IdCuidador=null;
                     $paciente->save();
                  }
-
+            
+            $recordatoriosAsociados=$cuidador->historialAdministracion()->get();
+            foreach($recordatoriosAsociados as $recordatorio)
+            {
+                $recordatorio->IdCuidador=null;
+                $recordatorio->save();
+            }
                  $cuidador->delete();
                 DB::commit();
 
