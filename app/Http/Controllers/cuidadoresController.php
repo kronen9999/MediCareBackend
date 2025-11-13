@@ -495,4 +495,53 @@ $correo=$request->CorreoE;
     "Telefono1"=>$informacionContactoPaciente->Telefono1,
     "Telefono2"=>$informacionContactoPaciente->Telefono2], 200);
     }
+
+    public function obtenerProximosRecordatorios(Request $request)
+    {
+        try{
+          $request->validate([
+            "IdCuidador"=>'required',
+            "TokenAcceso"=>'required',
+          ]);
+        }catch(\Illuminate\Validation\ValidationException $e){
+           $firstError = collect($e->errors())->flatten()->first();
+              return response()->json(['error' => $firstError], 422);
+        }
+           $Usuario=cu::where("IdCuidador",$request->IdCuidador)->first();
+
+        if (!$Usuario)
+        {
+            return response()->json(['message' => 'Usuario No encontrado'], 404);
+        }
+        if ($Usuario->TokenAcceso != $request->TokenAcceso)
+        {
+            return response()->json(['message' => 'Token de acceso invalido'], 401);
+        }
+
+        $paciente=$Usuario->pacientes()->first();
+        if (!$paciente)
+        {
+            return response()->json(['message' => 'No Asignado'], 400);
+        }
+
+        $recordatoriosProximos=$Usuario->historialAdministracion()->where('IdCuidador','=',$Usuario->IdCuidador)->where("Estado","=","No Administrado")->get();
+
+        $listaRecordatorios=[];
+
+        foreach ($recordatoriosProximos as $recordatorio)
+        {
+         $listaRecordatorios[]=[
+        'idHistorial' => $recordatorio->idHistorial,
+        'FechaProgramada' => $recordatorio->FechaProgramada,
+        'NombreM' => $recordatorio->NombreM,
+        'NombreP' => $recordatorio->NombreP,
+        'Dosis' => $recordatorio->Dosis,
+        'UnidadDosis' => $recordatorio->UnidadDosis,
+        'Notas' => $recordatorio->Notas,
+         ];
+        }
+        
+
+        return response()->json(['recordatorios'=>$listaRecordatorios], 200);
+    }
 }
