@@ -525,7 +525,7 @@ $correo=$request->CorreoE;
             return response()->json(['message' => 'No Asignado'], 400);
         }
 
-        $recordatoriosProximos=$Usuario->historialAdministracion()->where('IdCuidador','=',$Usuario->IdCuidador)->where("Estado","=","No Administrado")->get();
+        $recordatoriosProximos=$Usuario->historialAdministracion()->where('IdCuidador','=',$Usuario->IdCuidador)->where("Estado","=","No Administrado")->orderBy("FechaProgramada")->get();
 
         $listaRecordatorios=[];
 
