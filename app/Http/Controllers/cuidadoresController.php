@@ -459,4 +459,40 @@ $correo=$request->CorreoE;
         }
 
     }
+
+    public function saberPacienteAsignado(Request $request)
+    {
+     try{
+          $request->validate([
+            "IdCuidador"=>'required',
+            "TokenAcceso"=>'required',
+          ]);
+        }catch(\Illuminate\Validation\ValidationException $e){
+           $firstError = collect($e->errors())->flatten()->first();
+              return response()->json(['error' => $firstError], 422);
+        }
+           $Usuario=cu::where("IdCuidador",$request->IdCuidador)->first();
+
+        if (!$Usuario)
+        {
+            return response()->json(['message' => 'Usuario No encontrado'], 404);
+        }
+        if ($Usuario->TokenAcceso != $request->TokenAcceso)
+        {
+            return response()->json(['message' => 'Token de acceso invalido'], 401);
+        }
+        $paciente=$Usuario->pacientes()->first();
+        $informacionContactoPaciente=$paciente ? $paciente->informacionContactoPaciente()->first() : null;
+        if (!$paciente)
+        {
+            return response()->json(['message' => 'No Asignado'], 200);
+        }
+        return response()->json(["message"=>"Asignado",
+    "Nombre"=>$paciente->Nombre,
+    "ApellidoP"=>$paciente->ApellidoP,
+    "ApellidoM"=>$paciente->ApellidoP,
+    "Direccion"=>$informacionContactoPaciente->Direccion,
+    "Telefono1"=>$informacionContactoPaciente->Telefono1,
+    "Telefono2"=>$informacionContactoPaciente->Telefono2], 200);
+    }
 }
