@@ -2017,6 +2017,7 @@ try{
                foreach($registrosHistorial as $registro)
                {
                 $registro->IdHorario=null;
+                $registro->IdCuidador=null;
                 $registro->save();
                }
                $medicamento->delete();
