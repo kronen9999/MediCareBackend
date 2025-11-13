@@ -689,4 +689,54 @@ $correo=$request->CorreoE;
     ],200);
   
     }
+
+    public function obtenerHistorialReccordatorios(Request $request){
+    try{
+        $request->validate([
+            'IdCuidador'=>['Required'],
+            'TokenAcceso'=>['Required'],
+            'FechaDatos'=>['Required','date_format:Y-m-d']
+        ]);
+    }catch(\Illuminate\Validation\ValidationException $e)
+    {
+    $firstError = collect($e->errors())->flatten()->first();
+    return response()->json(['error' => $firstError], 422);
+    }
+
+        $Usuario=cu::where("IdCuidador",$request->IdCuidador)->first();
+
+        if (!$Usuario)
+        {
+            return response()->json(['message' => 'Usuario No encontrado'], 404);
+        }
+        if ($Usuario->TokenAcceso != $request->TokenAcceso)
+        {
+            return response()->json(['message' => 'Token de acceso invalido'], 401);
+        }
+
+        $recordatorios=$Usuario->historialAdministracion()->whereDate('FechaProgramada','=',$request->FechaDatos)->where("Estado","!=","No Administrado")->orderBy("FechaProgramada","asc")->get();
+        $listaRecordatorios=[];
+
+        foreach($recordatorios as $recordatorio)
+        {
+                $listaRecordatorios[]=[
+                    "IdHistorial"=>$recordatorio->idHistorial,
+                    "FechaProgramada"=>$recordatorio->FechaProgramada,
+                    "HoraAdministracion"=>$recordatorio->HoraAdministracion,
+                    "NombreM"=>$recordatorio->NombreM,
+                    "NombreP"=>$recordatorio->NombreP,
+                    "Dosis"=>$recordatorio->Dosis,
+                    "UnidadDosis"=>$recordatorio->UnidadDosis,
+                    "Notas"=>$recordatorio->Notas,
+                    "Administro"=>$recordatorio->Administro,
+                    "Estado"=>$recordatorio->Estado,
+                    "NombreCuidador"=>$Usuario->Nombre?$Usuario->Nombre:null
+                ];
+        }
+
+        return response()->json(["Recordatorios"=>$listaRecordatorios],200);
+
+
+
+    }
 }
