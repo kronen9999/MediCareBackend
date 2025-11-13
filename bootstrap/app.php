@@ -62,6 +62,7 @@ return Application::configure(basePath: dirname(__DIR__))
            'Familiares/Pacientes/Medicamentos/EliminarMedicamento',
            'Cuidadores/Pacientes/saberPacienteAsignado',
            'Cuidadores/Pacientes/ObtenerProximosRecordatorios',
+           'Cuidadores/Pacientes/AdministrarMedicamento',
         ]);
         //
     })

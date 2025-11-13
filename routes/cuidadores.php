@@ -17,3 +17,4 @@ Route::put('Cuidadores/Perfil/ActualizarContrasena', [cuidadoresController::clas
 //Metodos de administracion de pacientes
 Route::post('Cuidadores/Pacientes/saberPacienteAsignado',[cuidadoresController::class,'saberPacienteAsignado']);
 Route::post('Cuidadores/Pacientes/ObtenerProximosRecordatorios',[cuidadoresController::class,'obtenerProximosRecordatorios']);
+Route::post('Cuidadores/Pacientes/AdministrarMedicamento',[cuidadoresController::class,'administrarMedicamento']);
