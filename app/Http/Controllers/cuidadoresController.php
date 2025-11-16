@@ -492,6 +492,7 @@ $correo=$request->CorreoE;
     "Nombre"=>$paciente->Nombre,
     "ApellidoP"=>$paciente->ApellidoP,
     "ApellidoM"=>$paciente->ApellidoP,
+    "Padecimiento"=>$paciente->Padecimiento,
     "Direccion"=>$informacionContactoPaciente->Direccion,
     "Telefono1"=>$informacionContactoPaciente->Telefono1,
     "Telefono2"=>$informacionContactoPaciente->Telefono2], 200);
