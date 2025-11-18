@@ -11,6 +11,7 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\Support\Carbon;
 
 use function PHPUnit\Framework\isEmpty;
 
@@ -457,6 +458,286 @@ $correo=$request->CorreoE;
             DB::rollBack();
             return response()->json(['message' => $e->getMessage()], 500);
         }
+
+    }
+
+    public function saberPacienteAsignado(Request $request)
+    {
+     try{
+          $request->validate([
+            "IdCuidador"=>'required',
+            "TokenAcceso"=>'required',
+          ]);
+        }catch(\Illuminate\Validation\ValidationException $e){
+           $firstError = collect($e->errors())->flatten()->first();
+              return response()->json(['error' => $firstError], 422);
+        }
+           $Usuario=cu::where("IdCuidador",$request->IdCuidador)->first();
+
+        if (!$Usuario)
+        {
+            return response()->json(['message' => 'Usuario No encontrado'], 404);
+        }
+        if ($Usuario->TokenAcceso != $request->TokenAcceso)
+        {
+            return response()->json(['message' => 'Token de acceso invalido'], 401);
+        }
+        $paciente=$Usuario->pacientes()->first();
+        $informacionContactoPaciente=$paciente ? $paciente->informacionContactoPaciente()->first() : null;
+        if (!$paciente)
+        {
+            return response()->json(['message' => 'No Asignado'], 200);
+        }
+        return response()->json(["message"=>"Asignado",
+    "Nombre"=>$paciente->Nombre,
+    "ApellidoP"=>$paciente->ApellidoP,
+    "ApellidoM"=>$paciente->ApellidoP,
+    "Padecimiento"=>$paciente->Padecimiento,
+    "Direccion"=>$informacionContactoPaciente->Direccion,
+    "Telefono1"=>$informacionContactoPaciente->Telefono1,
+    "Telefono2"=>$informacionContactoPaciente->Telefono2], 200);
+    }
+
+    public function obtenerProximosRecordatorios(Request $request)
+    {
+        try{
+          $request->validate([
+            "IdCuidador"=>'required',
+            "TokenAcceso"=>'required',
+          ]);
+        }catch(\Illuminate\Validation\ValidationException $e){
+           $firstError = collect($e->errors())->flatten()->first();
+              return response()->json(['error' => $firstError], 422);
+        }
+           $Usuario=cu::where("IdCuidador",$request->IdCuidador)->first();
+
+        if (!$Usuario)
+        {
+            return response()->json(['message' => 'Usuario No encontrado'], 404);
+        }
+        if ($Usuario->TokenAcceso != $request->TokenAcceso)
+        {
+            return response()->json(['message' => 'Token de acceso invalido'], 401);
+        }
+
+        $paciente=$Usuario->pacientes()->first();
+        if (!$paciente)
+        {
+            return response()->json(['message' => 'No Asignado'], 400);
+        }
+
+        $recordatoriosProximos=$Usuario->historialAdministracion()->where('IdCuidador','=',$Usuario->IdCuidador)->where("Estado","=","No Administrado")->orderBy("FechaProgramada")->get();
+
+        $listaRecordatorios=[];
+
+        foreach ($recordatoriosProximos as $recordatorio)
+        {
+         $listaRecordatorios[]=[
+        'idHistorial' => $recordatorio->idHistorial,
+        'FechaProgramada' => $recordatorio->FechaProgramada,
+        'NombreM' => $recordatorio->NombreM,
+        'NombreP' => $recordatorio->NombreP,
+        'Dosis' => $recordatorio->Dosis,
+        'UnidadDosis' => $recordatorio->UnidadDosis,
+        'Notas' => $recordatorio->Notas,
+         ];
+        }
+        
+
+        return response()->json(['recordatorios'=>$listaRecordatorios], 200);
+    }
+
+    public function administrarMedicamento(Request $request)
+    {
+ try{
+          $request->validate([
+            "IdCuidador"=>'required',
+            "TokenAcceso"=>'required',
+            "IdHistorial"=>'required',
+            "FechaAdministracion"=>'required|date_format:Y-m-d H:i:s',
+          ]);
+        }catch(\Illuminate\Validation\ValidationException $e){
+           $firstError = collect($e->errors())->flatten()->first();
+              return response()->json(['error' => $firstError], 422);
+        }
+           $Usuario=cu::where("IdCuidador",$request->IdCuidador)->first();
+
+        if (!$Usuario)
+        {
+            return response()->json(['message' => 'Usuario No encontrado'], 404);
+        }
+        if ($Usuario->TokenAcceso != $request->TokenAcceso)
+        {
+            return response()->json(['message' => 'Token de acceso invalido'], 401);
+        }
+
+        $paciente=$Usuario->pacientes()->first();
+        if (!$paciente)
+        {
+            return response()->json(['message' => 'No Asignado'], 400);
+        }
+        $historialMedicamento=$Usuario->historialAdministracion()->where("idHistorial","=",$request->IdHistorial)->first();
+    if (!$historialMedicamento)
+    {
+      return response()->json(["message"=>"Registro no encontrado"],404);
+    }
+        try{
+        DB::beginTransaction();
+
+        $horaAdministracionParseada=carbon::createFromFormat("Y-m-d H:i:s",$request->FechaAdministracion);
+        $horaProgramadaParseada=carbon::createFromFormat('Y-m-d H:i:s',$historialMedicamento->FechaProgramada);
+        if ($horaAdministracionParseada<$horaProgramadaParseada)
+        {
+            return response()->json(["error"=>"No puede dar el medicamento antes de la fecha programada"],422);
+        }
+
+        if ($historialMedicamento->IdHorario==null)
+        {
+        $historialMedicamento->HoraAdministracion=$request->FechaAdministracion;
+        $historialMedicamento->Estado="Administrado";
+        $historialMedicamento->Administro=$Usuario->Nombre?$Usuario->Nombre:"Cuidador";
+        $historialMedicamento->save();
+        DB::commit();
+        return response()->json(["message"=>"Administracion registrada dado a que el medicamento se elimino no se generara el siguiente recordatorio de este medicamento",
+    "FechaSiguienteDosis"=>null,"NombreM"=>null,"NombreP"=>null],200);
+        }else{
+
+            $horarioMedicamento=$historialMedicamento->Horario()->first();
+            $medicamento=$horarioMedicamento->medicamento()->first();
+            $paciente=$medicamento->paciente()->first();
+
+            if($medicamento->MedicamentoActivo==0)
+            {
+                $historialMedicamento->HoraAdministracion=$request->FechaAdministracion;
+                $historialMedicamento->Estado="Administrado";
+                $historialMedicamento->Administro=$Usuario->Nombre?$Usuario->Nombre:"Cuidador";
+                $historialMedicamento->save();
+                DB::commit();
+                return response()->json(["message"=>"Administracion registrada dado a que el medicamento esta inactivo no se generara el siguiente recordatorio de este medicamento",
+            "FechaSiguienteDosis"=>null,"NombreM"=>null,"NombreP"=>null],200);
+            }
+            
+            if ($medicamento->MedicamentoActivo==1)
+            {
+                $historialMedicamento->HoraAdministracion=$request->FechaAdministracion;
+                $historialMedicamento->Estado="Administrado";
+                $historialMedicamento->Administro=$Usuario->Nombre?$Usuario->Nombre:"Cuidador";
+                $historialMedicamento->save();
+
+                $nuevaFechaProgramada=$horaAdministracionParseada->copy()->addHours((int)$horarioMedicamento->IntervaloHoras)->addMinutes((int)$horarioMedicamento->IntervaloMinutos);
+
+                $siguienteDosis=$nuevaFechaProgramada->format('Y-m-d H:i:s');
+                  $nuevoRegistro= $horarioMedicamento->historialAdministracion()->create([
+                'FechaProgramada'=>$siguienteDosis,
+                'HoraAdministracion'=>null,
+                'Estado'=>'No Administrado',
+                'Administro'=>null,
+                'IdFamiliar'=>$historialMedicamento->IdFamiliar,
+                'IdCuidador'=>$Usuario->IdCuidador,
+                'NombreM'=>$medicamento->NombreM,
+                'NombreP'=>$paciente->Nombre,
+                'Dosis'=>$horarioMedicamento->Dosis,
+                'UnidadDosis'=>$horarioMedicamento->UnidaDosis,
+                'Notas'=>$horarioMedicamento->Notas,
+            ]);
+            DB::commit();
+
+            return response()->json(["message"=>"Administracion del medicamento  realizada,se ha generado el siguiente recordatorio de la dosis",
+        "FechaSiguienteDosis"=>$nuevoRegistro->FechaProgramada,"NombreM"=>$nuevoRegistro->NombreM,"NombreP"=>$nuevoRegistro->NombreP],200);
+               
+           }
+        }
+
+        return response()->json(["message"=>"Medicamento administrado correctamente"],200);
+        }catch(Exception $e){
+            DB::rollBack();
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+    }
+
+    public function obtenerMetricasRecordatorios(Request $request)
+    {
+      try{
+          $request->validate([
+            "IdCuidador"=>'required',
+            "TokenAcceso"=>'required',
+          ]);
+        }catch(\Illuminate\Validation\ValidationException $e){
+           $firstError = collect($e->errors())->flatten()->first();
+              return response()->json(['error' => $firstError], 422);
+        }
+           $Usuario=cu::where("IdCuidador",$request->IdCuidador)->first();
+
+        if (!$Usuario)
+        {
+            return response()->json(['message' => 'Usuario No encontrado'], 404);
+        }
+        if ($Usuario->TokenAcceso != $request->TokenAcceso)
+        {
+            return response()->json(['message' => 'Token de acceso invalido'], 401);
+        }
+
+
+        
+    $recordatorios=$Usuario->historialAdministracion()->get();
+
+    $recordatoriosCancelados=$recordatorios->where("Estado","=","Cancelado")->count();
+    $recordatoriosAdministrados=$recordatorios->where("Estado","=","Administrado")->count();
+
+    return response()->json([
+        "RecordatoriosCancelados"=>$recordatoriosCancelados,
+        "RecordatoriosAdministrados"=>$recordatoriosAdministrados
+    ],200);
+  
+    }
+
+    public function obtenerHistorialReccordatorios(Request $request){
+    try{
+        $request->validate([
+            'IdCuidador'=>['Required'],
+            'TokenAcceso'=>['Required'],
+            'FechaDatos'=>['Required','date_format:Y-m-d']
+        ]);
+    }catch(\Illuminate\Validation\ValidationException $e)
+    {
+    $firstError = collect($e->errors())->flatten()->first();
+    return response()->json(['error' => $firstError], 422);
+    }
+
+        $Usuario=cu::where("IdCuidador",$request->IdCuidador)->first();
+
+        if (!$Usuario)
+        {
+            return response()->json(['message' => 'Usuario No encontrado'], 404);
+        }
+        if ($Usuario->TokenAcceso != $request->TokenAcceso)
+        {
+            return response()->json(['message' => 'Token de acceso invalido'], 401);
+        }
+
+        $recordatorios=$Usuario->historialAdministracion()->whereDate('FechaProgramada','=',$request->FechaDatos)->where("Estado","!=","No Administrado")->orderBy("FechaProgramada","asc")->get();
+        $listaRecordatorios=[];
+
+        foreach($recordatorios as $recordatorio)
+        {
+                $listaRecordatorios[]=[
+                    "IdHistorial"=>$recordatorio->idHistorial,
+                    "FechaProgramada"=>$recordatorio->FechaProgramada,
+                    "HoraAdministracion"=>$recordatorio->HoraAdministracion,
+                    "NombreM"=>$recordatorio->NombreM,
+                    "NombreP"=>$recordatorio->NombreP,
+                    "Dosis"=>$recordatorio->Dosis,
+                    "UnidadDosis"=>$recordatorio->UnidadDosis,
+                    "Notas"=>$recordatorio->Notas,
+                    "Administro"=>$recordatorio->Administro,
+                    "Estado"=>$recordatorio->Estado,
+                    "NombreCuidador"=>$Usuario->Nombre?$Usuario->Nombre:null
+                ];
+        }
+
+        return response()->json(["Recordatorios"=>$listaRecordatorios],200);
+
+
 
     }
 }

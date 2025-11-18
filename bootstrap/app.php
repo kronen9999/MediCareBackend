@@ -47,7 +47,24 @@ return Application::configure(basePath: dirname(__DIR__))
            'Cuidadores/Perfil/ActualizarInformacionPersonal',
            'Cuidadores/Perfil/ActualizarInformacionCuenta',
            'Cuidadores/Perfil/ActualizarContrasena',
-           
+           'Familiares/Pacientes/Medicamentos/AgregarMedicamentoHorario',
+           'Familiares/Pacientes/Medicamentos/ObtenerMedicamentos',
+           'Familiares/Pacientes/Medicamentos/ObtenerMedicamento',
+           'Familiares/Pacientes/Medicamentos/EditarMedicamento',
+           'Familiares/Pacientes/Medicamentos/EditarHorarioMedicamento',
+           'HistorialAdministracion/ObtenerProximosRecordatorios',
+           'HistorialAdministracion/administrarMedicamentos',
+           'HistorialAdministracion/CancelarAdministracionMedicamento',
+           'HistorialAdministracion/ObtenerHistorialAdministracion',
+           'Familiares/Pacientes/Medicamentos/HabilitarMedicamento',
+           'Familiares/Pacientes/Medicamentos/DesabilitarMedicamento',
+           'HistorialAdministracion/ObtenerMetricasAdministracion',
+           'Familiares/Pacientes/Medicamentos/EliminarMedicamento',
+           'Cuidadores/Pacientes/saberPacienteAsignado',
+           'Cuidadores/Pacientes/ObtenerProximosRecordatorios',
+           'Cuidadores/Pacientes/AdministrarMedicamento',
+           'Cuidadores/Pacientes/ObtenerMetricasRecordatorios',
+           'Cuidadores/Pacientes/ObtenerHistorialRecordatorios',
         ]);
         //
     })

@@ -11,6 +11,13 @@ class medicamentos extends Model
     protected $primaryKey = 'IdMedicamento';
     public $timestamps = false;
 
+   public $fillable = [
+        'NombreM',
+        'DescripcionM',
+        'TipoMedicamento',
+        'MedicamentoActivo'
+    ];
+
     public function NombreM():Attribute{
        return  Attribute::make(
             set: fn($value) => strtoupper($value),

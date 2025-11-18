@@ -30,12 +30,13 @@ class cuidadores extends Model
         );
     }
 
-    public function CorreoE():Attribute{
-        return Attribute::make(
-            get: fn($value) => strtolower($value),
-            set: fn($value) => strtolower($value),
-        );
-    }
+    
+public function CorreoE(): Attribute {
+    return Attribute::make(
+        get: fn($value) => $value ? strtolower($value) : null,
+        set: fn($value) => $value ? strtolower($value) : null,
+    );
+}
 
     public function Contrasena():Attribute{
         return Attribute::make(

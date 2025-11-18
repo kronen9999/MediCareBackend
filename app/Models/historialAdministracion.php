@@ -3,13 +3,27 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class historialAdministracion extends Model
 {
     protected $table = 'historialadministracion';
-    protected $primaryKey = 'idhistorial';
+    protected $primaryKey = 'idHistorial';
     public $timestamps = false;
    
+    public $fillable = [
+        'FechaProgramada',
+        'HoraAdministracion',
+        'Estado',
+        'Administro',
+        'NombreM',
+        'NombreP',
+        'Dosis',
+        'UnidadDosis',
+        'Notas',
+        'IdFamiliar',
+        'IdCuidador',
+    ];
 
 
 
@@ -23,4 +37,8 @@ class historialAdministracion extends Model
         return $this->belongsTo(horariosMedicamentos::class, 'IdHorario');
     }
     
+    public function familiar()
+    {
+        return $this->belongsTo(familiares::class,'IdFamiliar');
+    }
 }
