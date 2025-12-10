@@ -84,7 +84,7 @@
     <div class="ContenedorBase">
         <img src="https://085cb14e85.imgdist.com/pub/bfra/tdqbpcts/ofs/m81/9sq/medicarelogo.png" alt="medicarelogo"
             class="ImgMedicare">
-        <p>Usuario verificado correctamente,ya puede iniciar sesion en la aplicacion movil.</p>
+        <p>{{$message}}</p>
     </div>
 </body>
 

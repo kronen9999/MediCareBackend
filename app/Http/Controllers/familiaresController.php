@@ -105,18 +105,20 @@ class familiaresController extends Controller
 
     if ($Usuario->UsuarioVerificado=="1")
         {
-            return response()->json(['message' => 'Usuario ya verificado'], 409);
+            return view('User.verificationCode', ['message' => 'Usuario ya verificado,usted ya puede iniciar sesion en la aplicacion']);
         }
 
         if ($Usuario->CodigoVerificacion != $codigo)
         {
-            return response()->json(['message' => 'Codigo de verificacion incorrecto'], 401);
+             return view('User.verificationCode', ['message' => 'Codigo de verificacion incorrecto,si su usuario ya esta verificado omita esto por favor']);
+       
         }
 
         $Usuario->UsuarioVerificado="1";
         $Usuario->save();
 
-        return response()->json(['message' => 'Usuario verificado'], 200);
+          return view('User.verificationCode', ['message' => 'Usuario verificado correctamente,ya puede iniciar sesion en la aplicacion']);
+       
     
     }
 
@@ -602,6 +604,8 @@ $correo=$request->CorreoE;
         $firstError = collect($e->errors())->flatten()->first();
            return response()->json(['error' => $firstError], 422);
      }
+
+
 
      $familiar = fam::where('IdFamiliar',$request->IdFamiliar)->first();
         if (!$familiar)
